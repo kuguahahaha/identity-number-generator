@@ -68,27 +68,18 @@ body{
   background:linear-gradient(135deg,var(--primary),#6366f1);
   padding:2px 9px;border-radius:20px;
 }
-.hero p.sub{color:var(--text2);margin-top:7px;font-size:13px;max-width:900px}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
-.chip{
-  font-size:11.5px;font-weight:600;padding:3px 11px;border-radius:20px;
-  border:1px solid var(--line-strong);background:#fff;color:var(--text2);
-  display:inline-flex;align-items:center;gap:6px;
-}
-.chip i{width:7px;height:7px;border-radius:50%;display:inline-block}
-.dot-idc{background:var(--idc)} .dot-psp{background:var(--psp)} .dot-hkm{background:var(--hkm)}
-.dot-tw{background:var(--tw)} .dot-usci{background:var(--usci)} .dot-pr{background:var(--pr)}
+.hero p.sub{color:var(--text2);margin-top:6px;font-size:12.5px;max-width:780px}
 
-.statbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:18px}
+.statbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:9px;margin-top:12px}
 .stat{
-  background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 14px;
-  border-left:4px solid var(--primary);
+  background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 11px;
+  border-left:3px solid var(--primary);
 }
 .stat.s2{border-left-color:var(--psp)}
 .stat.s3{border-left-color:var(--ok)}
 .stat.s4{border-left-color:var(--tw)}
-.stat b{display:block;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.5px}
-.stat span{font-size:11.5px;color:var(--muted);font-weight:600}
+.stat b{display:block;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.4px;line-height:1.35}
+.stat span{font-size:10.5px;color:var(--muted);font-weight:600}
 
 /* ---------- Tabs ---------- */
 .tabs{display:flex;gap:6px;margin:20px 0 0;flex-wrap:wrap;background:#fff;padding:7px;border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow)}
@@ -284,16 +275,8 @@ td.num,th.num{text-align:right;width:56px;color:var(--muted);font-variant-numeri
 
   <!-- ================= HERO ================= -->
   <header class="hero">
-    <h1>身份标识自动生成器 <span class="ver">v1.1</span></h1>
-    <p class="sub">用于测试环境的证件号码批量生成与合规校验。个人证件遵循 <b>GB 11643-1999</b>、《外国人永久居留身份证技术规范》与公安部出入境证件编号口径；单位证件遵循 <b>GB 32100-2015</b>（含第 1 号修改单）与 <b>GB 11714</b> 组织机构代码规则。生成结果全部经过内置校验器实时复核。</p>
-    <div class="chips">
-      <span class="chip"><i class="dot-idc"></i>公民身份证</span>
-      <span class="chip"><i class="dot-pr"></i>外国人永久居留身份证</span>
-      <span class="chip"><i class="dot-psp"></i>护照</span>
-      <span class="chip"><i class="dot-hkm"></i>港澳居民来往内地通行证</span>
-      <span class="chip"><i class="dot-tw"></i>台湾居民来往大陆通行证</span>
-      <span class="chip"><i class="dot-usci"></i>统一社会信用代码</span>
-    </div>
+    <h1>身份标识自动生成器 <span class="ver">v1.3</span></h1>
+    <p class="sub">测试环境专用的 6 类证件号码批量生成与合规校验，生成结果全部经内置校验器实时复核。编码依据详见「规则说明」页签。</p>
     <div class="statbar">
       <div class="stat"><b id="s-gen">0</b><span>本次会话生成</span></div>
       <div class="stat s2"><b id="s-store">0</b><span>台账已存记录</span></div>
