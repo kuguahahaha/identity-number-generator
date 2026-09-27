@@ -11,12 +11,12 @@
 
 | 版本 | 入口 | 说明 |
 |---|---|---|
-| **极简版 v1.5**（推荐快速使用） | [index.html](https://kuguahahaha.github.io/identity-number-generator/) | 生成 → 校验 → 历史，三步走完 |
+| **极简版 v1.6**（推荐快速使用） | [index.html](https://kuguahahaha.github.io/identity-number-generator/) | 生成 → 校验 → 历史，三步走完 |
 | **完整版 v1.3** | [index-pro.html](https://kuguahahaha.github.io/identity-number-generator/index-pro.html) | 分页签，带台账、批量自检、全类型匹配、规则说明 |
 
 ## 两个版本怎么选
 
-| 能力 | 极简版 v1.5 | 完整版 v1.3 |
+| 能力 | 极简版 v1.6 | 完整版 v1.3 |
 |---|---|---|
 | 证件生成 | ✅ 6 类（含外国人永久居留身份证） | ✅ 6 类（含外国人永久居留身份证） |
 | 号码校验 | ✅ 自动识别 | ✅ 自动识别 + 指定类型 + **全类型并行匹配** |
@@ -63,9 +63,9 @@ GB 32100-2015 规定第 9-17 位按 GB 11714 编码（8 位数字 + 1 位校验�
 ## 下载
 
 - [Releases 页面](https://github.com/kuguahahaha/identity-number-generator/releases)
-- [极简版 v1.5](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.5/identity-number-generator-v1.5.html)（约 76 KB，当前）
+- [极简版 v1.6](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.6/identity-number-generator-v1.6.html)（约 77 KB，当前）
 - [完整版 v1.3](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.3/identity-number-generator-v1.3.html)（约 126 KB，当前）
-- [极简版 v1.4](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.4/identity-number-generator-v1.4.html)（约 76 KB，旧版存档）
+- [极简版 v1.5](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.5/identity-number-generator-v1.5.html)（约 76 KB，旧版存档）
 - [极简版 v1.0](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.0/identity-number-generator-v1.0.html)（约 65 KB，旧版存档）
 
 ## 自检脚本
@@ -81,7 +81,10 @@ node 算法自检.js index.html     # 校验极简版
 
 ## 更新日志
 
-### v1.5（极简版，当前）
+### v1.6（极简版，当前）
+- **表单彻底单行化**：生成数量与「生成并自动校验」按钮并入参数行，6 类证件均为「参数项 + 数量 + 按钮」一行完成，去掉了原来独立的按钮行
+
+### v1.5（极简版，旧版存档）
 - **紧缩参数面板**：6 类证件的参数项全部收为单行（身份证 4 项、统一社会信用代码 4 项并为一行，其余类型限宽收窄），控件宽度减半
 
 ### v1.4（极简版，旧版存档）
