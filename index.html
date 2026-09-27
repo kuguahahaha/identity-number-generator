@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>身份标识生成器 · 极简版 v1.0</title>
+<title>身份标识生成器 · 极简版 v1.2</title>
 <style>
 :root{
   --bg:#f4f6fc; --card:#fff; --line:#e3e8f2; --line2:#cdd8ee;
   --text:#1e293b; --text2:#475569; --muted:#8794ab;
-  --idc:#2563eb; --psp:#7c3aed; --hkm:#e11d48; --tw:#ea580c; --usci:#059669;
+  --idc:#2563eb; --psp:#7c3aed; --hkm:#e11d48; --tw:#ea580c; --usci:#059669; --pr:#b45309;
   --ok:#16a34a; --warn:#d97706; --err:#dc2626;
   --mono:"JetBrains Mono","Cascadia Mono",Consolas,Menlo,monospace;
 }
@@ -24,7 +24,7 @@ body{
 .hero{position:relative;background:linear-gradient(120deg,#fff,#f8fbff 55%,#f6f4ff);border:1px solid var(--line);
   border-radius:18px;padding:20px 22px;box-shadow:0 2px 10px rgba(15,23,42,.05);overflow:hidden}
 .hero:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;
-  background:linear-gradient(180deg,var(--idc),var(--psp) 32%,var(--hkm) 58%,var(--tw) 78%,var(--usci))}
+  background:linear-gradient(180deg,var(--idc),var(--psp) 26%,var(--hkm) 48%,var(--tw) 66%,var(--usci) 84%,var(--pr))}
 .hero h1{font-size:21px;font-weight:800;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
 .hero h1 .ver{font-size:11px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--idc),#6366f1);padding:2px 9px;border-radius:20px;letter-spacing:.5px}
 .hero p{color:var(--text2);font-size:12.5px;margin-top:6px}
@@ -53,6 +53,7 @@ body{
 .pill.on[data-t=hkm]{background:linear-gradient(135deg,#e11d48,#f4607f)}
 .pill.on[data-t=twn]{background:linear-gradient(135deg,#ea580c,#fb9048)}
 .pill.on[data-t=usci]{background:linear-gradient(135deg,#059669,#10b981)}
+.pill.on[data-t=pr]{background:linear-gradient(135deg,#b45309,#f59e0b)}
 
 .row{display:flex;flex-wrap:wrap;gap:11px;margin-bottom:11px;align-items:flex-end}
 .fld{display:flex;flex-direction:column;gap:4px;min-width:116px;flex:1}
@@ -95,6 +96,7 @@ td.i{width:46px;color:var(--muted);font-variant-numeric:tabular-nums}
 .chip.hkm{border-left-color:var(--hkm);background:#fff4f6}
 .chip.tw{border-left-color:var(--tw);background:#fff7f1}
 .chip.usci{border-left-color:var(--usci);background:#f1fbf7}
+.chip.pr{border-left-color:var(--pr);background:#fffaf0}
 .badge{display:inline-flex;align-items:center;font-size:11px;font-weight:800;padding:2px 9px;border-radius:20px;white-space:nowrap}
 .badge.pass{background:#eafaf0;color:#15803d;border:1px solid #b8ecc8}
 .badge.warn{background:#fff8e8;color:#b45309;border:1px solid #fbe0a6}
@@ -129,14 +131,14 @@ footer a{color:var(--idc);text-decoration:none}
 <div class="wrap">
 
   <header class="hero">
-    <h1>身份标识生成器 <span class="ver">v1.0 极简版</span></h1>
-    <p>公民身份证 / 护照 / 港澳通行证 / 台湾通行证 / 统一社会信用代码 —— 一键生成并实时校验。单文件、零依赖、可离线，历史记录存在浏览器本地。</p>
+    <h1>身份标识生成器 <span class="ver">v1.2 极简版</span></h1>
+    <p>公民身份证 / <b>外国人永久居留身份证</b> / 护照 / 港澳通行证 / 台湾通行证 / 统一社会信用代码 —— 一键生成并实时校验。单文件、零依赖、可离线，历史记录存在浏览器本地。</p>
     <div class="statbar">
       <div class="stat"><b id="s1">0</b><span>本次生成</span></div>
       <div class="stat s2"><b id="s2">0</b><span>历史记录</span></div>
       <div class="stat s3"><b id="s3">—</b><span>校验通过率</span></div>
     </div>
-    <div class="tip">需要批量自检（1000×18 用例）、全类型并行匹配、规则说明与 JSON 导出，请用 <b>完整版 v1.1</b>。</div>
+    <div class="tip">需要批量自检（1000×24 用例）、全类型并行匹配、规则说明与 JSON 导出，请用 <b>完整版 v1.1</b>。</div>
   </header>
 
   <!-- ① 生成 -->
@@ -148,6 +150,7 @@ footer a{color:var(--idc);text-decoration:none}
       <button class="pill" data-t="hkm">港澳通行证</button>
       <button class="pill" data-t="twn">台湾通行证</button>
       <button class="pill" data-t="usci">统一社会信用代码</button>
+      <button class="pill" data-t="pr">外国人永居证</button>
     </div>
 
     <div id="cfg"></div>
@@ -210,6 +213,8 @@ footer a{color:var(--idc);text-decoration:none}
 // ==LOGIC_START==
 // ==LITE_LOGIC_START==
 // ==LOGIC_START==
+// ==LITE_LOGIC_START==
+// ==LOGIC_START==
 /* ============ 基础数据 ============ */
 const PROVINCE_RAW = "11|北京市,12|天津市,13|河北省,14|山西省,15|内蒙古自治区,21|辽宁省,22|吉林省,23|黑龙江省,31|上海市,32|江苏省,33|浙江省,34|安徽省,35|福建省,36|江西省,37|山东省,41|河南省,42|湖北省,43|湖南省,44|广东省,45|广西壮族自治区,46|海南省,50|重庆市,51|四川省,52|贵州省,53|云南省,54|西藏自治区,61|陕西省,62|甘肃省,63|青海省,64|宁夏回族自治区,65|新疆维吾尔自治区,71|中国台湾省,81|中国香港特别行政区,82|中国澳门特别行政区";
 
@@ -269,6 +274,34 @@ const COUNTRIES = [
   ["ITA","意大利"],["ESP","西班牙"],["NLD","荷兰"],["CHE","瑞士"],["SWE","瑞典"],["NOR","挪威"]
 ];
 const COUNTRY_MAP = {}; COUNTRIES.forEach(function(c){ COUNTRY_MAP[c[0]] = c[1]; });
+
+/* 国籍 / 地区数字代码（GB/T 2659.1，等同 ISO 3166-1 numeric），用于外国人永久居留身份证第 4-6 位 */
+const PR_COUNTRIES = [
+  ["000","无国籍"],
+  ["036","澳大利亚"],["076","巴西"],["100","保加利亚"],["104","缅甸"],["124","加拿大"],
+  ["144","斯里兰卡"],["152","智利"],["156","中国"],["158","中国台湾"],["170","哥伦比亚"],
+  ["188","哥斯达黎加"],["191","克罗地亚"],["203","捷克"],["208","丹麦"],["233","爱沙尼亚"],
+  ["242","斐济"],["246","芬兰"],["250","法国"],["268","格鲁吉亚"],["276","德国"],
+  ["300","希腊"],["348","匈牙利"],["352","冰岛"],["356","印度"],["360","印度尼西亚"],
+  ["364","伊朗"],["368","伊拉克"],["372","爱尔兰"],["376","以色列"],["380","意大利"],
+  ["388","牙买加"],["392","日本"],["398","哈萨克斯坦"],["400","约旦"],["404","肯尼亚"],
+  ["408","朝鲜"],["410","韩国"],["414","科威特"],["418","老挝"],["422","黎巴嫩"],
+  ["428","拉脱维亚"],["434","利比亚"],["440","立陶宛"],["442","卢森堡"],["458","马来西亚"],
+  ["462","马尔代夫"],["496","蒙古"],["498","摩尔多瓦"],["499","黑山"],["504","摩洛哥"],
+  ["512","阿曼"],["516","纳米比亚"],["524","尼泊尔"],["528","荷兰"],["554","新西兰"],
+  ["558","尼加拉瓜"],["562","尼日尔"],["566","尼日利亚"],["578","挪威"],["583","密克罗尼西亚"],
+  ["586","巴基斯坦"],["591","巴拿马"],["598","巴布亚新几内亚"],["604","秘鲁"],["608","菲律宾"],
+  ["616","波兰"],["620","葡萄牙"],["634","卡塔尔"],["642","罗马尼亚"],["643","俄罗斯"],
+  ["682","沙特阿拉伯"],["688","塞尔维亚"],["702","新加坡"],["703","斯洛伐克"],["704","越南"],
+  ["705","斯洛文尼亚"],["710","南非"],["724","西班牙"],["729","苏丹"],["740","苏里南"],
+  ["748","斯威士兰"],["752","瑞典"],["756","瑞士"],["760","叙利亚"],["764","泰国"],
+  ["780","特立尼达和多巴哥"],["784","阿联酋"],["792","土耳其"],["795","土库曼斯坦"],
+  ["804","乌克兰"],["807","北马其顿"],["818","埃及"],["826","英国"],["834","坦桑尼亚"],
+  ["840","美国"],["858","乌拉圭"],["862","委内瑞拉"],["887","也门"],["894","赞比亚"]
+];
+const PR_COUNTRY_MAP = {}; PR_COUNTRIES.forEach(function(c){ PR_COUNTRY_MAP[c[0]] = c[1]; });
+/* 首次申领地代码：GB/T 2260 省级行政区划数字代码前两位（不含港澳台，永居证在内地/大陆申领） */
+const PR_PROVS = ["11","12","13","14","15","21","22","23","31","32","33","34","35","36","37","41","42","43","44","45","46","50","51","52","53","54","61","62","63","64","65"];
 
 /* 统一社会信用代码：登记管理部门 + 机构类别（GB 32100-2015 表2/表3 + 第1号修改单 + 代码中心扩展） */
 const USCI_DEPT = {
@@ -413,6 +446,31 @@ function genTwnPermit(opt){
   else if(f === "13") n = digits(10) + "(" + pick("ABCDEFGHJKLMNPQRSTUVWXYZ".split("")) + ")";
   else n = digits(10) + "(" + digits(2) + ")";
   return { number: n, meta:{ kind: f + " 位形式" } };
+}
+
+function genPrPermit(opt){
+  opt = opt || {};
+  var prov = opt.prov && PR_PROVS.indexOf(opt.prov) >= 0 ? opt.prov : pick(PR_PROVS);
+  var cc = opt.cc && /^\d{3}$/.test(opt.cc) ? opt.cc : pick(PR_COUNTRIES)[0];
+  var birth = opt.birth || (opt.d1 && opt.d2 ? randomDateRange(opt.d1, opt.d2) : randomDateRange("1950-01-01","2005-12-31"));
+  var sex = opt.sex || "random";
+  if(sex === "random") sex = Math.random() < 0.5 ? "M" : "F";
+  var seq = pad(1 + rnd(998), 3).split("");
+  var last = parseInt(seq[2], 10);
+  if(sex === "M" && last % 2 === 0) last = last === 8 ? 9 : last + 1;
+  if(sex === "F" && last % 2 === 1) last = last === 9 ? 8 : last + 1;
+  seq[2] = String(last);
+  var first17 = "9" + prov + cc + pad(birth.y, 4) + pad(birth.m, 2) + pad(birth.d, 2) + seq.join("");
+  return {
+    number: first17 + idCheckDigit(first17),
+    meta: {
+      kind: "新版 18 位（五星卡）",
+      prov: prov, provName: PROV_MAP[prov] || "未知省级行政区",
+      cc: cc, ccName: PR_COUNTRY_MAP[cc] || "未收录国籍码",
+      sex: sex, sexText: sex === "M" ? "男" : "女",
+      birthday: pad(birth.y,4) + "-" + pad(birth.m,2) + "-" + pad(birth.d,2)
+    }
+  };
 }
 
 function randomOrgCode(){
@@ -593,6 +651,79 @@ function validateTWN(raw){
   return mkResult("twn","台湾居民来往大陆通行证", ok, ok ? level : "fail", items, meta, ok ? summary : "校验未通过");
 }
 
+function validatePrResident(raw){
+  var items = [], s = String(raw).trim().toUpperCase(), meta = {};
+
+  /* 旧版 15 位（2017 版及之前：3 位拉丁字母国籍代码 + 12 位数字），宽松判定 */
+  if(s.length === 15){
+    var oldOk = /^[A-Z]{3}\d{12}$/.test(s);
+    items.push(it("版本识别", true, oldOk ? "warn" : "fail",
+      oldOk ? "15 位形态 → 旧版永居证（外国人永久居留证 / 2017 版）：3 位拉丁字母国籍代码 " + s.slice(0,3) + " + 12 位数字"
+            : "15 位但不符合「3 位字母 + 12 位数字」的旧版构成"));
+    if(oldOk){
+      var occ = s.slice(0,3);
+      meta.kind = "旧版 15 位";
+      meta.country = occ; meta.countryName = COUNTRY_MAP[occ] || "未收录";
+      return mkResult("pr","外国人永久居留身份证", true, "warn", items, meta,
+        "旧版号码结构合规（旧版无 MOD 11-2 校验位，无法核验校验位；证件在有效期内仍可正常使用）");
+    }
+    return mkResult("pr","外国人永久居留身份证", false, "fail", items, meta, "校验未通过");
+  }
+
+  var lenOk = s.length === 18;
+  items.push(it("长度", lenOk, lenOk ? "pass" : "fail", s.length + " 位（新版必须为 18 位）"));
+  var charset = /^\d{17}[0-9X]$/.test(s);
+  items.push(it("字符构成", charset, charset ? "pass" : "fail", charset ? "17 位数字 + 1 位校验码（数字或 X）" : "新版号码必须为 17 位数字 + 1 位校验码（数字或 X）"));
+  if(!lenOk || !charset){
+    return mkResult("pr","外国人永久居留身份证", false, "fail", items, meta, "结构不符合《外国人永久居留身份证技术规范》");
+  }
+
+  var idOk = s.charAt(0) === "9";
+  items.push(it("第 1 位(身份标识码)", idOk, idOk ? "pass" : "fail",
+    idOk ? "9（外国人标识，区别于公民身份号码首位 1-8）" : "必须为 9，实际为 " + s.charAt(0)));
+
+  var prov = s.slice(1,3);
+  var provOk = PR_PROVS.indexOf(prov) >= 0;
+  items.push(it("第 2-3 位(首次申领地)", provOk, provOk ? "pass" : "fail",
+    provOk ? (prov + " " + (PROV_MAP[prov] || "")) : (prov + " 不是有效的省级行政区划代码（GB/T 2260）")));
+  meta.prov = prov; meta.provName = provOk ? (PROV_MAP[prov] || "") : "未知";
+
+  var cc = s.slice(3,6);
+  var ccName = PR_COUNTRY_MAP[cc];
+  var ccOk = !!ccName;
+  items.push(it("第 4-6 位(国家/地区代码)", true, ccOk ? "pass" : "warn",
+    ccOk ? (cc + " " + ccName + (cc === "000" ? "（无国籍）" : "")) : (cc + " 不在内置 GB/T 2659.1 数字代码表中（ISO 3166-1 numeric 共 200 余项，内置为常用子集）")));
+  meta.cc = cc; meta.ccName = ccName || "未收录";
+
+  var bs = s.slice(6,14);
+  var y = parseInt(bs.slice(0,4),10), m = parseInt(bs.slice(4,6),10), d = parseInt(bs.slice(6,8),10);
+  var dateOk = false, dateDetail = "";
+  if(!/^\d{8}$/.test(bs)){ dateDetail = "出生日期段含非数字字符"; }
+  else if(y < 1901 || y > 2099){ dateDetail = "年份 " + y + " 超出 1901—2099"; }
+  else if(m < 1 || m > 12){ dateDetail = "月份 " + m + " 非法"; }
+  else if(d < 1 || d > daysInMonth(y, m)){ dateDetail = "日期 " + y + "-" + m + "-" + d + " 不存在"; }
+  else { dateOk = true; dateDetail = y + "-" + pad(m,2) + "-" + pad(d,2) + "（日期真实）"; }
+  items.push(it("第 7-14 位(出生日期)", dateOk, dateOk ? "pass" : "fail", dateDetail));
+  meta.birthday = dateOk ? (y + "-" + pad(m,2) + "-" + pad(d,2)) : bs;
+
+  var seq = s.slice(14,17);
+  var seqNum = parseInt(seq, 10);
+  var seqOk = seqNum >= 1;
+  items.push(it("第 15-17 位(顺序码)", seqOk, seqOk ? "pass" : "fail",
+    seqOk ? (seq + " → 第 17 位 " + (seqNum % 2 === 1 ? "奇数=男性" : "偶数=女性")) : "顺序码应从 001 起"));
+  meta.sex = seqNum % 2 === 1 ? "M" : "F";
+  meta.sexText = meta.sex === "M" ? "男" : "女";
+
+  var exp = idCheckDigit(s.slice(0,17));
+  var ckOk = exp === s.charAt(17);
+  items.push(it("第 18 位(校验码 MOD 11-2)", ckOk, ckOk ? "pass" : "fail", "应为 " + exp + "，实际 " + s.charAt(17)));
+
+  var hardOk = idOk && provOk && dateOk && seqOk && ckOk;
+  var hasWarn = items.some(function(x){ return x.level === "warn"; });
+  return mkResult("pr","外国人永久居留身份证", hardOk, hardOk ? (hasWarn ? "warn" : "pass") : "fail", items, meta,
+    hardOk ? (hasWarn ? "结构合规（国籍代码未收录，仅影响真实性）" : "完全合规") : "校验未通过");
+}
+
 function validateUSCI(raw){
   var items = [], s = String(raw).trim().toUpperCase(), meta = {};
   var lenOk = s.length === 18;
@@ -656,16 +787,17 @@ function validateUSCI(raw){
 
 const VALIDATORS = {
   idcard: validateIdCard,
+  pr: validatePrResident,
   passport: validatePassport,
   hkm: validateHKM,
   twn: validateTWN,
   usci: validateUSCI
 };
 const TYPE_NAMES = {
-  idcard:"公民身份证号码", passport:"护照证件号码", hkm:"港澳居民来往内地通行证",
+  idcard:"公民身份证号码", pr:"外国人永久居留身份证", passport:"护照证件号码", hkm:"港澳居民来往内地通行证",
   twn:"台湾居民来往大陆通行证", usci:"统一社会信用代码"
 };
-const TYPE_ORDER = ["idcard","passport","hkm","twn","usci"];
+const TYPE_ORDER = ["idcard","pr","passport","hkm","twn","usci"];
 
 function validateAs(type, raw){ return VALIDATORS[type](raw); }
 
@@ -687,7 +819,7 @@ function matchAll(raw){
 // ==LITE_LOGIC_END==
 /* ---------------- UI ---------------- */
 const LS = "idgen.lite.v1";
-let LIST = [], HIST = [], CUR = "idcard", SEG = { sex:"random", pspMode:"intl", pspTail:"num", hkmP:"random", hkmL:"random" };
+let LIST = [], HIST = [], CUR = "idcard", SEG = { sex:"random", pspMode:"intl", pspTail:"num", hkmP:"random", hkmL:"random", prSex:"random" };
 
 function toast(m, k){
   const b = document.getElementById("toast");
@@ -754,6 +886,13 @@ const CFG = {
       '<option value="random">随机（8/10/13/14 位）</option><option value="8">8 位纯数字</option>' +
       '<option value="10">10 位纯数字</option><option value="13">13 位：10 位数字 + (字母)</option>' +
       '<option value="14">14 位：10 位数字 + (两位数字)</option></select></div></div>',
+  pr: () =>
+    '<div class="row"><div class="fld"><label>首次申领地（省级，第 2-3 位）</label><select id="c1"></select></div>' +
+    '<div class="fld"><label>国籍 / 地区（第 4-6 位）</label><select id="c2"></select></div></div>' +
+    '<div class="row"><div class="fld"><label>性别</label><div class="seg" data-seg="prSex">' +
+      '<button class="on" data-v="random">随机</button><button data-v="M">男</button><button data-v="F">女</button></div></div>' +
+    '<div class="fld"><label>出生起始</label><input type="date" id="c3" value="1950-01-01"></div>' +
+    '<div class="fld"><label>出生结束</label><input type="date" id="c4" value="2005-12-31"></div></div>',
   usci: () =>
     '<div class="row"><div class="fld"><label>登记管理部门</label><select id="c1"></select></div>' +
     '<div class="fld"><label>机构类别</label><select id="c2"></select></div></div>' +
@@ -803,6 +942,14 @@ function buildCfg(){
     fillCat(); d.addEventListener("change", fillCat);
     regions(document.getElementById("c3"));
   }
+  if(CUR === "pr"){
+    const ps = document.getElementById("c1");
+    ps.innerHTML = '<option value="">随机（31 个省级行政区）</option>' +
+      PR_PROVS.map(p => '<option value="' + p + '">' + p + "　" + (PROV_MAP[p] || "") + "</option>").join("");
+    const cs = document.getElementById("c2");
+    cs.innerHTML = '<option value="">随机（内置国籍码表）</option>' +
+      PR_COUNTRIES.map(c => '<option value="' + c[0] + '">' + c[0] + "　" + c[1] + "</option>").join("");
+  }
   box.querySelectorAll("[data-seg]").forEach(g => {
     g.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
       g.querySelectorAll("button").forEach(x => x.classList.remove("on"));
@@ -825,6 +972,7 @@ function genOne(){
     : genPassport({ mode: "intl", country: val("c2"), length: val("c3"), tailSet: "num" });
   if(CUR === "hkm") return genHKMPermit({ prefix: SEG.hkmP, length: SEG.hkmL === "random" ? 0 : parseInt(SEG.hkmL, 10) });
   if(CUR === "twn") return genTwnPermit({ format: val("c1") });
+  if(CUR === "pr") return genPrPermit({ prov: val("c1"), cc: val("c2"), sex: SEG.prSex, d1: val("c3"), d2: val("c4") });
   return genUSCI({ dept: val("c1"), cat: val("c2"), region: val("c3"), subject: val("c4") });
 }
 function brief(t, m){
@@ -832,6 +980,9 @@ function brief(t, m){
   if(t === "passport") return '<span class="tag k">' + (m.kind || "") + "</span>" + (m.countryName ? '<span class="tag">' + m.country + " " + m.countryName + "</span>" : "");
   if(t === "hkm") return '<span class="tag k">' + (m.kind || "") + '</span><span class="tag">' + (m.place || "") + "</span>";
   if(t === "twn") return '<span class="tag k">' + (m.kind || "") + "</span>";
+  if(t === "pr") return '<span class="tag ' + (m.sex === "M" ? "m" : "f") + '">' + m.sexText + '</span>' +
+    '<span class="tag">' + m.birthday + '</span><span class="tag k">' + (m.provName || "") + '</span>' +
+    '<span class="tag">' + (m.ccName || "") + "</span>";
   return '<span class="tag k">' + (m.deptName || "") + '</span><span class="tag">' + (m.catName || "") + '</span><span class="tag">' + (m.regionName || "") + "</span>";
 }
 function briefTxt(t, m){
@@ -839,6 +990,7 @@ function briefTxt(t, m){
   if(t === "passport") return (m.kind || "") + (m.countryName ? " / " + m.country + " " + m.countryName : "");
   if(t === "hkm") return m.kind + " / " + m.place;
   if(t === "twn") return m.kind;
+  if(t === "pr") return m.sexText + " / " + m.birthday + " / " + m.provName + " / " + m.ccName;
   return m.deptName + " / " + m.catName + " / " + m.regionName;
 }
 function badge(lv){
@@ -984,6 +1136,8 @@ document.getElementById("vclear").addEventListener("click", () => {
 document.getElementById("vdemo").addEventListener("click", () => {
   document.getElementById("vin").value = [
     genIdCard({}), genIdCard({ sex: "F" }),
+    genPrPermit({ prov: "32", cc: "682", sex: "M", birth: { y: 1985, m: 1, d: 1 } }),
+    genPrPermit({ prov: "11", cc: "124", sex: "F", birth: { y: 1981, m: 8, d: 3 } }),
     genPassport({ mode: "cn", kind: "E" }), genPassport({ mode: "intl", country: "USA", length: 9 }),
     genHKMPermit({ prefix: "H", length: 9 }), genHKMPermit({ prefix: "M", length: 11 }),
     genTwnPermit({ format: "8" }), genTwnPermit({ format: "13" }),
