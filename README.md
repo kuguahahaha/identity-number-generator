@@ -11,14 +11,14 @@
 
 | 版本 | 入口 | 说明 |
 |---|---|---|
-| **极简版 v1.0** | [index.html](https://kuguahahaha.github.io/identity-number-generator/) | 生成 → 校验 → 历史，三步走完 |
+| **极简版 v1.2**（推荐快速使用） | [index.html](https://kuguahahaha.github.io/identity-number-generator/) | 生成 → 校验 → 历史，三步走完 |
 | **完整版 v1.1** | [index-pro.html](https://kuguahahaha.github.io/identity-number-generator/index-pro.html) | 分页签，带台账、批量自检、全类型匹配、规则说明 |
 
 ## 两个版本怎么选
 
-| 能力 | 极简版 v1.0 | 完整版 v1.1 |
+| 能力 | 极简版 v1.2 | 完整版 v1.1 |
 |---|---|---|
-| 证件生成 | ✅ 5 类 | ✅ **6 类**（含外国人永久居留身份证） |
+| 证件生成 | ✅ 6 类（含外国人永久居留身份证） | ✅ 6 类（含外国人永久居留身份证） |
 | 号码校验 | ✅ 自动识别 | ✅ 自动识别 + 指定类型 + **全类型并行匹配** |
 | 校验明细 | 一句话结论 | 逐位明细（长度 / 字符构成 / 日期段 / 区划码 / 校验位…） |
 | 历史记录 | ✅ 200 条，可搜索 | ✅ 无限，搜索 + 按类型 / 状态筛选 + 去重入库 |
@@ -26,7 +26,7 @@
 | 批量自检 | — | ✅ 24 个用例 × 1000 次随机抽样，输出通过率 |
 | 规则说明页 | — | ✅ 6 类证件完整规则 + 校验算法实现要点 |
 | 单位证件参数 | ✅ 部门 / 类别 / 区划 | ✅ 同上 + 主体标识码严格 / 扩展双模式 |
-| 文件大小 | 约 65 KB | 约 115 KB |
+| 文件大小 | 约 76 KB | 约 124 KB |
 
 ## 支持的证件类型与规则
 
@@ -63,8 +63,9 @@ GB 32100-2015 规定第 9-17 位按 GB 11714 编码（8 位数字 + 1 位校验�
 ## 下载
 
 - [Releases 页面](https://github.com/kuguahahaha/identity-number-generator/releases)
-- [极简版 v1.0](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.0/identity-number-generator-v1.0.html)（约 65 KB）
-- [完整版 v1.1](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.1/identity-number-generator-v1.1.html)（约 110 KB）
+- [极简版 v1.2](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.2/identity-number-generator-v1.2.html)（约 76 KB，当前）
+- [完整版 v1.1](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.1/identity-number-generator-v1.1.html)（约 124 KB，当前）
+- [极简版 v1.0](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.0/identity-number-generator-v1.0.html)（约 65 KB，旧版存档）
 
 ## 自检脚本
 
@@ -79,13 +80,18 @@ node 算法自检.js index.html     # 校验极简版
 
 ## 更新日志
 
+### v1.2（极简版，当前）
+- 极简版同步新增**外国人永久居留身份证**：6 类证件齐平，支持申领地 / 国籍 / 性别 / 出生区间参数
+- 校验页自动识别升级为 6 套规则；示例新增永居证官方样例
+- 算法内核由完整版注入，两版规则永远一致
+
 ### v1.1（完整版，当前）
 - 新增**外国人永久居留身份证**（2023.12"五星卡"）：18 位生成与校验，支持申领地 / 国籍（内置 100 项 GB/T 2659.1 数字码）/ 性别 / 出生区间参数；兼容旧版 15 位宽松判定
 - 全类型并行匹配升级为 6 套规则；批量自检升级为 24 个用例 × 1000 次
-- 极简版 v1.0 保持首版形态不变（5 类证件）
+- 极简版 v1.0 保持首版形态不变（5 类证件），后续升级走 v1.2
 - 首次发布时已有：全类型并行匹配、批量自检、规则说明页、数据台账、主体标识码双模式
 
-### v1.0（极简版）
+### v1.0（极简版，旧版存档）
 - 首版：5 类证件生成 + 自动校验 + 历史记录 + CSV 导出
 
 ---
