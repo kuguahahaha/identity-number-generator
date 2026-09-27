@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>身份标识生成器 · 极简版 v1.2</title>
+<title>身份标识生成器 · 极简版 v1.4</title>
 <style>
 :root{
   --bg:#f4f6fc; --card:#fff; --line:#e3e8f2; --line2:#cdd8ee;
@@ -131,14 +131,14 @@ footer a{color:var(--idc);text-decoration:none}
 <div class="wrap">
 
   <header class="hero">
-    <h1>身份标识生成器 <span class="ver">v1.2 极简版</span></h1>
+    <h1>身份标识生成器 <span class="ver">v1.4 极简版</span></h1>
     <p>公民身份证 / <b>外国人永久居留身份证</b> / 护照 / 港澳通行证 / 台湾通行证 / 统一社会信用代码 —— 一键生成并实时校验。单文件、零依赖、可离线，历史记录存在浏览器本地。</p>
     <div class="statbar">
       <div class="stat"><b id="s1">0</b><span>本次生成</span></div>
       <div class="stat s2"><b id="s2">0</b><span>历史记录</span></div>
       <div class="stat s3"><b id="s3">—</b><span>校验通过率</span></div>
     </div>
-    <div class="tip">需要批量自检（1000×24 用例）、全类型并行匹配、规则说明与 JSON 导出，请用 <b>完整版 v1.1</b>。</div>
+    <div class="tip">需要批量自检（1000×24 用例）、全类型并行匹配、规则说明与 JSON 导出，请用 <b>完整版 v1.3</b>。</div>
   </header>
 
   <!-- ① 生成 -->
@@ -156,9 +156,9 @@ footer a{color:var(--idc);text-decoration:none}
     <div id="cfg"></div>
 
     <div class="row" style="margin-top:2px">
-      <div class="fld" style="max-width:92px"><label>生成数量</label><input type="number" id="cnt" value="10" min="1" max="500"></div>
+      <div class="fld" style="max-width:110px;flex:0 0 110px"><label>生成数量</label><input type="number" id="cnt" value="10" min="1" max="500"></div>
+      <button class="btn btn-main" id="gen" style="flex:1;width:auto">生成并自动校验</button>
     </div>
-    <button class="btn btn-main" id="gen">生成并自动校验</button>
     <div class="bar">
       <button class="btn btn-ghost" id="copyall">复制全部</button>
       <button class="btn btn-ghost" id="saveall">全部存入历史</button>
@@ -204,7 +204,7 @@ footer a{color:var(--idc);text-decoration:none}
 
   <footer>
     输出仅用于系统测试与联调，不具备任何法定证明效力。<br>
-    完整版 v1.1：<a href="https://github.com/kuguahahaha/identity-number-generator" target="_blank">github.com/kuguahahaha/identity-number-generator</a>
+    完整版 v1.3：<a href="https://github.com/kuguahahaha/identity-number-generator" target="_blank">github.com/kuguahahaha/identity-number-generator</a>
   </footer>
 </div>
 <div id="toast"></div>
@@ -887,12 +887,13 @@ const CFG = {
       '<option value="10">10 位纯数字</option><option value="13">13 位：10 位数字 + (字母)</option>' +
       '<option value="14">14 位：10 位数字 + (两位数字)</option></select></div></div>',
   pr: () =>
-    '<div class="row"><div class="fld"><label>首次申领地（省级，第 2-3 位）</label><select id="c1"></select></div>' +
-    '<div class="fld"><label>国籍 / 地区（第 4-6 位）</label><select id="c2"></select></div></div>' +
-    '<div class="row"><div class="fld"><label>性别</label><div class="seg" data-seg="prSex">' +
+    '<div class="row">' +
+    '<div class="fld" style="max-width:200px;min-width:132px"><label>首次申领地（第 2-3 位）</label><select id="c1"></select></div>' +
+    '<div class="fld" style="max-width:200px;min-width:132px"><label>国籍 / 地区（第 4-6 位）</label><select id="c2"></select></div>' +
+    '<div class="fld" style="max-width:158px;min-width:122px"><label>性别</label><div class="seg" data-seg="prSex">' +
       '<button class="on" data-v="random">随机</button><button data-v="M">男</button><button data-v="F">女</button></div></div>' +
-    '<div class="fld"><label>出生起始</label><input type="date" id="c3" value="1950-01-01"></div>' +
-    '<div class="fld"><label>出生结束</label><input type="date" id="c4" value="2005-12-31"></div></div>',
+    '<div class="fld" style="max-width:148px;min-width:126px"><label>出生起始</label><input type="date" id="c3" value="1950-01-01"></div>' +
+    '<div class="fld" style="max-width:148px;min-width:126px"><label>出生结束</label><input type="date" id="c4" value="2005-12-31"></div></div>',
   usci: () =>
     '<div class="row"><div class="fld"><label>登记管理部门</label><select id="c1"></select></div>' +
     '<div class="fld"><label>机构类别</label><select id="c2"></select></div></div>' +
