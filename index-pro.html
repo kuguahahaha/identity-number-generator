@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>身份标识自动生成器 · 个人证件 / 单位证件</title>
+<style>
+:root{
+  --bg:#f3f6fc;
+  --bg2:#eef2fa;
+  --card:#ffffff;
+  --line:#e2e8f5;
+  --line-strong:#cdd8ee;
+  --text:#1e293b;
+  --text2:#475569;
+  --muted:#8794ab;
+  --primary:#2563eb;
+  --primary2:#3b82f6;
+  --idc:#2563eb;
+  --psp:#7c3aed;
+  --hkm:#e11d48;
+  --tw:#ea580c;
+  --usci:#059669;
+  --ok:#16a34a;
+  --warn:#d97706;
+  --err:#dc2626;
+  --shadow:0 1px 2px rgba(15,23,42,.04), 0 4px 14px rgba(15,23,42,.05);
+  --radius:14px;
+  --mono:"JetBrains Mono","Cascadia Mono",Consolas,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,-apple-system,sans-serif;
+  background:
+    radial-gradient(1100px 520px at 8% -8%, #e6efff 0%, rgba(230,239,255,0) 62%),
+    radial-gradient(900px 460px at 96% 4%, #f3e8ff 0%, rgba(243,232,255,0) 58%),
+    var(--bg);
+  color:var(--text);
+  font-size:14px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1400px;margin:0 auto;padding:26px 22px 70px}
+
+/* ---------- Hero ---------- */
+.hero{
+  position:relative;
+  background:linear-gradient(120deg,#ffffff 0%,#f8fbff 55%,#f6f4ff 100%);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:24px 26px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.hero:before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:6px;
+  background:linear-gradient(180deg,var(--idc),var(--psp) 32%,var(--hkm) 58%,var(--tw) 78%,var(--usci));
+}
+.hero:after{
+  content:"";position:absolute;right:-70px;top:-70px;width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, rgba(37,99,235,.10), rgba(37,99,235,0) 70%);
+}
+.hero h1{font-size:23px;font-weight:800;letter-spacing:.4px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hero h1 .ver{
+  font-size:11px;font-weight:700;color:#fff;letter-spacing:.6px;
+  background:linear-gradient(135deg,var(--primary),#6366f1);
+  padding:2px 9px;border-radius:20px;
+}
+.hero p.sub{color:var(--text2);margin-top:7px;font-size:13px;max-width:900px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+.chip{
+  font-size:11.5px;font-weight:600;padding:3px 11px;border-radius:20px;
+  border:1px solid var(--line-strong);background:#fff;color:var(--text2);
+  display:inline-flex;align-items:center;gap:6px;
+}
+.chip i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.dot-idc{background:var(--idc)} .dot-psp{background:var(--psp)} .dot-hkm{background:var(--hkm)}
+.dot-tw{background:var(--tw)} .dot-usci{background:var(--usci)}
+
+.statbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:18px}
+.stat{
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 14px;
+  border-left:4px solid var(--primary);
+}
+.stat.s2{border-left-color:var(--psp)}
+.stat.s3{border-left-color:var(--ok)}
+.stat.s4{border-left-color:var(--tw)}
+.stat b{display:block;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.5px}
+.stat span{font-size:11.5px;color:var(--muted);font-weight:600}
+
+/* ---------- Tabs ---------- */
+.tabs{display:flex;gap:6px;margin:20px 0 0;flex-wrap:wrap;background:#fff;padding:7px;border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow)}
+.tab{
+  appearance:none;border:1px solid transparent;background:transparent;color:var(--text2);
+  font-size:13px;font-weight:700;padding:8px 16px;border-radius:10px;cursor:pointer;
+  transition:.16s;display:inline-flex;align-items:center;gap:7px;font-family:inherit;
+}
+.tab:hover{background:#f1f5fd;color:var(--text)}
+.tab.on{background:linear-gradient(135deg,var(--primary),#4f7ff5);color:#fff;box-shadow:0 3px 10px rgba(37,99,235,.28)}
+.tab .cnt{
+  font-size:10.5px;background:#eef2fa;color:var(--text2);border-radius:20px;padding:0 7px;font-weight:800;
+}
+.tab.on .cnt{background:rgba(255,255,255,.25);color:#fff}
+
+.panel{display:none;margin-top:16px;animation:fade .22s ease}
+.panel.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- Card ---------- */
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:18px;margin-bottom:16px;
+}
+.card > h3{
+  font-size:14.5px;font-weight:800;display:flex;align-items:center;gap:9px;margin-bottom:14px;
+  padding-bottom:11px;border-bottom:1px dashed var(--line-strong);
+}
+.card > h3 .bar{width:4px;height:15px;border-radius:3px;background:var(--primary)}
+.card > h3 small{font-weight:600;color:var(--muted);font-size:11.5px;margin-left:auto}
+
+.grid2{display:grid;grid-template-columns:minmax(320px,400px) 1fr;gap:16px;align-items:start}
+@media (max-width:1080px){.grid2{grid-template-columns:1fr}}
+
+/* ---------- Type selector ---------- */
+.typelist{display:grid;gap:9px}
+.type{
+  display:flex;align-items:flex-start;gap:11px;padding:11px 13px;border-radius:11px;cursor:pointer;
+  border:1.5px solid var(--line);background:#fcfdff;transition:.16s;
+}
+.type:hover{border-color:var(--line-strong);background:#f7faff}
+.type .tg{width:9px;height:34px;border-radius:5px;flex:none;margin-top:1px}
+.type .tt{font-weight:800;font-size:13.5px}
+.type .td{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.5}
+.type.on{border-color:currentColor;background:#fff;box-shadow:0 3px 12px rgba(37,99,235,.10)}
+.type.on[data-t="idcard"]{color:var(--idc);border-color:var(--idc);background:#f5f9ff}
+.type.on[data-t="passport"]{color:var(--psp);border-color:var(--psp);background:#faf7ff}
+.type.on[data-t="hkm"]{color:var(--hkm);border-color:var(--hkm);background:#fff5f7}
+.type.on[data-t="twn"]{color:var(--tw);border-color:var(--tw);background:#fff8f3}
+.type.on[data-t="usci"]{color:var(--usci);border-color:var(--usci);background:#f3fdf9}
+.type.on .tt,.type.on .td{color:inherit}
+.type.on .td{opacity:.75}
+
+/* ---------- Form controls ---------- */
+.row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px}
+.fld{display:flex;flex-direction:column;gap:5px;min-width:120px;flex:1}
+.fld > label{font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:.2px}
+input[type=text],input[type=number],input[type=date],select,textarea{
+  font-family:inherit;font-size:13px;color:var(--text);background:#fff;
+  border:1.5px solid var(--line-strong);border-radius:9px;padding:8px 11px;outline:none;transition:.15s;width:100%;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--primary2);box-shadow:0 0 0 3px rgba(59,130,246,.13)}
+textarea{font-family:var(--mono);font-size:12.5px;line-height:1.8;resize:vertical;letter-spacing:.4px}
+select{cursor:pointer;appearance:none;background-image:linear-gradient(45deg,transparent 50%,#8794ab 50%),linear-gradient(135deg,#8794ab 50%,transparent 50%);background-position:calc(100% - 15px) 52%,calc(100% - 10px) 52%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:30px}
+.hint{font-size:11px;color:var(--muted);margin-top:-3px}
+.seg{display:flex;gap:0;border:1.5px solid var(--line-strong);border-radius:9px;overflow:hidden;background:#fff}
+.seg button{
+  flex:1;appearance:none;border:0;background:transparent;font-family:inherit;font-size:12.5px;font-weight:700;
+  color:var(--text2);padding:8px 6px;cursor:pointer;transition:.15s;border-right:1px solid var(--line);
+}
+.seg button:last-child{border-right:0}
+.seg button:hover{background:#f2f6ff}
+.seg button.on{background:linear-gradient(135deg,var(--primary),#4f7ff5);color:#fff}
+
+.btn{
+  appearance:none;font-family:inherit;font-size:13px;font-weight:800;letter-spacing:.3px;
+  border:0;border-radius:10px;padding:10px 18px;cursor:pointer;transition:.16s;
+  display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
+}
+.btn:active{transform:translateY(1px)}
+.btn-main{background:linear-gradient(135deg,var(--primary),#4f7ff5);color:#fff;box-shadow:0 4px 14px rgba(37,99,235,.3);width:100%;justify-content:center;padding:12px}
+.btn-main:hover{box-shadow:0 6px 20px rgba(37,99,235,.4)}
+.btn-ghost{background:#fff;color:var(--text2);border:1.5px solid var(--line-strong)}
+.btn-ghost:hover{background:#f4f8ff;color:var(--primary);border-color:var(--primary2)}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:8px}
+.btn-danger{background:#fff;color:var(--err);border:1.5px solid #fbc9c9}
+.btn-danger:hover{background:#fef2f2}
+.btnbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+
+/* ---------- Table ---------- */
+.tblwrap{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.tblwrap.scroll{max-height:460px;overflow:auto}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px}
+thead th{
+  position:sticky;top:0;z-index:2;background:linear-gradient(180deg,#f7faff,#eef3fd);
+  text-align:left;font-size:11.5px;font-weight:800;color:var(--text2);letter-spacing:.4px;
+  padding:9px 11px;border-bottom:1.5px solid var(--line-strong);white-space:nowrap;
+}
+tbody td{padding:8px 11px;border-bottom:1px solid #f0f4fb;vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:#f8fbff}
+tbody tr:nth-child(even) td{background:#fcfdff}
+tbody tr:nth-child(even):hover td{background:#f6faff}
+td.num,th.num{text-align:right;width:56px;color:var(--muted);font-variant-numeric:tabular-nums}
+.mono{font-family:var(--mono);font-size:13px;letter-spacing:.9px;font-weight:700;color:#0f172a}
+.mono.idc{color:var(--idc)} .mono.psp{color:var(--psp)} .mono.hkm{color:var(--hkm)}
+.mono.tw{color:var(--tw)} .mono.usci{color:var(--usci)}
+.numchip{
+  display:inline-block;font-family:var(--mono);font-weight:700;letter-spacing:1px;font-size:13px;
+  padding:2px 9px;border-radius:7px;background:#f4f7fd;border:1px solid var(--line);border-left:3px solid var(--primary);
+}
+.numchip.idc{border-left-color:var(--idc);background:#f2f7ff}
+.numchip.psp{border-left-color:var(--psp);background:#f8f5ff}
+.numchip.hkm{border-left-color:var(--hkm);background:#fff4f6}
+.numchip.tw{border-left-color:var(--tw);background:#fff7f1}
+.numchip.usci{border-left-color:var(--usci);background:#f1fbf7}
+
+.badge{
+  display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;
+  padding:2.5px 9px;border-radius:20px;white-space:nowrap;
+}
+.badge.pass{background:#eafaf0;color:#15803d;border:1px solid #b8ecc8}
+.badge.warn{background:#fff8e8;color:#b45309;border:1px solid #fbe0a6}
+.badge.fail{background:#fef1f1;color:#b91c1c;border:1px solid #fbc9c9}
+.badge.info{background:#eef3fd;color:#1d4ed8;border:1px solid #c9dbfb}
+.tag{
+  display:inline-block;font-size:10.5px;font-weight:700;padding:1.5px 8px;border-radius:6px;
+  background:#f2f5fb;color:var(--text2);border:1px solid var(--line);margin-right:4px;
+}
+.tag.m{background:#eef4ff;color:#1d4ed8;border-color:#cfe0fd}
+.tag.f{background:#fdf0f8;color:#be185d;border-color:#f8cfe8}
+.tag.k{background:#f0fbf6;color:#047857;border-color:#c7ecdc}
+
+.acts{display:flex;gap:5px;white-space:nowrap}
+.icobtn{
+  appearance:none;border:1px solid var(--line);background:#fff;border-radius:7px;
+  font-family:inherit;font-size:11px;font-weight:700;color:var(--text2);padding:3.5px 8px;cursor:pointer;transition:.14s;
+}
+.icobtn:hover{background:#eef4ff;color:var(--primary);border-color:var(--primary2)}
+.icobtn.del:hover{background:#fef2f2;color:var(--err);border-color:#fbc9c9}
+
+.empty{padding:44px 20px;text-align:center;color:var(--muted);font-size:12.5px}
+.empty .big{font-size:26px;display:block;margin-bottom:8px;opacity:.5}
+
+/* ---------- verify result ---------- */
+.vres{border:1px solid var(--line);border-radius:12px;margin-bottom:11px;overflow:hidden;background:#fff}
+.vres.pass{border-left:4px solid var(--ok)}
+.vres.warn{border-left:4px solid var(--warn)}
+.vres.fail{border-left:4px solid var(--err)}
+.vhead{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fbfcff;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.vhead .vt{font-size:11.5px;color:var(--muted);font-weight:700}
+.vbody{padding:9px 14px 12px;display:grid;gap:5px}
+.vitem{display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.55}
+.vitem .mk{width:15px;flex:none;font-weight:900;text-align:center}
+.vitem.ok .mk{color:var(--ok)} .vitem.no .mk{color:var(--err)} .vitem.wr .mk{color:var(--warn)}
+.vitem b{font-weight:700;color:var(--text2);min-width:88px;flex:none}
+.vitem span{color:var(--text)}
+.vitem.no span{color:var(--err)} .vitem.wr span{color:#b45309}
+.vmeta{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 12px}
+
+/* ---------- rules ---------- */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px}
+.rule{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fff;border-top:4px solid var(--primary)}
+.rule.r2{border-top-color:var(--psp)} .rule.r3{border-top-color:var(--hkm)}
+.rule.r4{border-top-color:var(--tw)} .rule.r5{border-top-color:var(--usci)}
+.rule h4{font-size:13.5px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.rule ul{list-style:none;display:grid;gap:6px}
+.rule li{font-size:12.2px;color:var(--text2);padding-left:16px;position:relative;line-height:1.65}
+.rule li:before{content:"";position:absolute;left:3px;top:8px;width:6px;height:6px;border-radius:2px;background:var(--line-strong)}
+.rule code{font-family:var(--mono);font-size:11.5px;background:#f4f7fd;border:1px solid var(--line);border-radius:5px;padding:0 5px;color:#1d4ed8}
+.rule .ref{font-size:10.5px;color:var(--muted);margin-top:9px;padding-top:8px;border-top:1px dashed var(--line-strong)}
+
+/* ---------- toast ---------- */
+#toast{position:fixed;right:24px;bottom:26px;display:grid;gap:8px;z-index:99}
+.tmsg{
+  background:#0f172a;color:#fff;font-size:12.5px;font-weight:700;padding:10px 16px;border-radius:10px;
+  box-shadow:0 8px 26px rgba(15,23,42,.28);animation:up .25s ease;display:flex;align-items:center;gap:8px;
+}
+.tmsg.good{background:#16a34a} .tmsg.bad{background:#dc2626}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+.selfcheck{display:grid;gap:8px;margin-top:6px}
+.scrow{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;font-size:12.5px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#fcfdff}
+.scrow .scbar{height:6px;border-radius:6px;background:#eef2fa;overflow:hidden;margin-top:5px}
+.scrow .scbar i{display:block;height:100%;background:linear-gradient(90deg,var(--ok),#4ade80);border-radius:6px;transition:width .5s}
+.scrow b{font-weight:800;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ================= HERO ================= -->
+  <header class="hero">
+    <h1>身份标识自动生成器 <span class="ver">v1.0</span></h1>
+    <p class="sub">用于测试环境的证件号码批量生成与合规校验。个人证件遵循 <b>GB 11643-1999</b> 与公安部出入境证件编号口径；单位证件遵循 <b>GB 32100-2015</b>（含第 1 号修改单）与 <b>GB 11714</b> 组织机构代码规则。生成结果全部经过内置校验器实时复核。</p>
+    <div class="chips">
+      <span class="chip"><i class="dot-idc"></i>公民身份证</span>
+      <span class="chip"><i class="dot-psp"></i>护照</span>
+      <span class="chip"><i class="dot-hkm"></i>港澳居民来往内地通行证</span>
+      <span class="chip"><i class="dot-tw"></i>台湾居民来往大陆通行证</span>
+      <span class="chip"><i class="dot-usci"></i>统一社会信用代码</span>
+    </div>
+    <div class="statbar">
+      <div class="stat"><b id="s-gen">0</b><span>本次会话生成</span></div>
+      <div class="stat s2"><b id="s-store">0</b><span>台账已存记录</span></div>
+      <div class="stat s3"><b id="s-rate">—</b><span>实时自检通过率</span></div>
+      <div class="stat s4"><b id="s-fail">0</b><span>校验未通过</span></div>
+    </div>
+  </header>
+
+  <!-- ================= TABS ================= -->
+  <nav class="tabs">
+    <button class="tab on" data-p="person">个人证件生成</button>
+    <button class="tab" data-p="org">单位证件生成</button>
+    <button class="tab" data-p="verify">号码校验 / 匹配</button>
+    <button class="tab" data-p="store">数据台账 <span class="cnt" id="cnt-store">0</span></button>
+    <button class="tab" data-p="rule">规则说明</button>
+  </nav>
+
+  <!-- ================= 个人证件 ================= -->
+  <section class="panel on" id="p-person">
+    <div class="grid2">
+      <!-- 左：配置 -->
+      <div>
+        <div class="card">
+          <h3><span class="bar"></span>证件类型</h3>
+          <div class="typelist" id="ptypes">
+            <div class="type on" data-t="idcard"><span class="tg" style="background:linear-gradient(180deg,#2563eb,#60a5fa)"></span>
+              <div><div class="tt">公民身份证号码</div><div class="td">18 位 · 出生日期 + GB 11643 校验位</div></div></div>
+            <div class="type" data-t="passport"><span class="tg" style="background:linear-gradient(180deg,#7c3aed,#a78bfa)"></span>
+              <div><div class="tt">护照证件号码</div><div class="td">≤12 位 · 前 3 位国籍代码 / 中国护照规则</div></div></div>
+            <div class="type" data-t="hkm"><span class="tg" style="background:linear-gradient(180deg,#e11d48,#fb7185)"></span>
+              <div><div class="tt">港澳居民来往内地通行证</div><div class="td">9 位或 11 位 · H / M 前缀</div></div></div>
+            <div class="type" data-t="twn"><span class="tg" style="background:linear-gradient(180deg,#ea580c,#fdba74)"></span>
+              <div><div class="tt">台湾居民来往大陆通行证</div><div class="td">8 位 / 10-14 位 · 含括号后缀式</div></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="bar" id="cfgbar"></span>生成参数 <small id="cfgname">公民身份证号码</small></h3>
+          <div id="cfg-idcard" class="cfgbox">
+            <div class="row">
+              <div class="fld"><label>归属地区（行政区划码）</label><select id="idc-region"></select></div>
+            </div>
+            <div class="row">
+              <div class="fld"><label>性别</label>
+                <div class="seg" id="idc-sex">
+                  <button class="on" data-v="random">随机</button><button data-v="M">男</button><button data-v="F">女</button>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="fld"><label>出生日期起始</label><input type="date" id="idc-d1" value="1980-01-01" min="1901-01-01" max="2099-12-31"></div>
+              <div class="fld"><label>出生日期结束</label><input type="date" id="idc-d2" value="2005-12-31" min="1901-01-01" max="2099-12-31"></div>
+            </div>
+            <div class="hint">出生日期区间须落在 19010101 — 20991231 之内（国标要求）。</div>
+          </div>
+
+          <div id="cfg-passport" class="cfgbox" style="display:none">
+            <div class="row">
+              <div class="fld"><label>编号规则</label>
+                <select id="psp-mode">
+                  <option value="intl">国际通用：3 位国籍代码 + 序号（≤12 位）</option>
+                  <option value="cn">中国护照：E/G/E+字母/DE·SE·PE 等</option>
+                </select>
+              </div>
+            </div>
+            <div id="psp-intl">
+              <div class="row">
+                <div class="fld"><label>国籍 / 地区代码</label><select id="psp-country"></select></div>
+                <div class="fld"><label>号码总长度</label><input type="number" id="psp-len" value="9" min="4" max="12"></div>
+              </div>
+              <div class="row">
+                <div class="fld"><label>序号字符集</label>
+                  <div class="seg" id="psp-tailset">
+                    <button class="on" data-v="num">纯数字</button><button data-v="alnum">字母+数字</button><button data-v="alpha">纯字母</button>
+                  </div>
+                </div>
+              </div>
+              <div class="hint">中国护照实际为 9 位（如 E12345678、EA1234567）；此处按"前 3 位国籍代码"的通用规则生成，供跨境测试使用。</div>
+            </div>
+            <div id="psp-cn" style="display:none">
+              <div class="row">
+                <div class="fld"><label>护照种类</label>
+                  <select id="psp-kind">
+                    <option value="E">E + 8 位数字（2017.4 后签发的电子普通护照）</option>
+                    <option value="EX">E + 字母 + 7 位数字（2017.4 起新规则，字母不含 I、O）</option>
+                    <option value="G">G + 8 位数字（旧版普通护照）</option>
+                    <option value="PE">PE + 7 位数字（公务普通电子护照）</option>
+                    <option value="SE">SE + 7 位数字（公务电子护照）</option>
+                    <option value="DE">DE + 7 位数字（外交电子护照）</option>
+                    <option value="P">P + 8 位数字（公务普通护照）</option>
+                    <option value="S">S + 8 位数字（公务护照）</option>
+                    <option value="D">D + 8 位数字（外交护照）</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="cfg-hkm" class="cfgbox" style="display:none">
+            <div class="row">
+              <div class="fld"><label>签发地前缀</label>
+                <div class="seg" id="hkm-prefix">
+                  <button class="on" data-v="random">随机</button><button data-v="H">H 香港</button><button data-v="M">M 澳门</button>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="fld"><label>号码长度</label>
+                <div class="seg" id="hkm-len">
+                  <button class="on" data-v="random">随机</button><button data-v="9">9 位（H/M+8 位数字）</button><button data-v="11">11 位（H/M+10 位数字）</button>
+                </div>
+              </div>
+            </div>
+            <div class="hint">证件正面"换证次数"为独立 2 位数栏目，不计入证件号码本身。</div>
+          </div>
+
+          <div id="cfg-twn" class="cfgbox" style="display:none">
+            <div class="row">
+              <div class="fld"><label>号码格式</label>
+                <select id="twn-fmt">
+                  <option value="random">随机（8 位 / 10 位 / 13 位 / 14 位）</option>
+                  <option value="8">8 位纯数字（8 位终身号）</option>
+                  <option value="10">10 位纯数字</option>
+                  <option value="13">13 位：10 位数字 + "(字母)"</option>
+                  <option value="14">14 位：10 位数字 + "(两位数字)"</option>
+                </select>
+              </div>
+            </div>
+            <div class="hint">10 位号码中，前 8 位为终身号，后 2 位为签发次数；13/14 位为带括号后缀的书写形式。</div>
+          </div>
+
+          <div class="row" style="margin-top:6px">
+            <div class="fld"><label>生成数量</label><input type="number" id="p-count" value="10" min="1" max="500"></div>
+          </div>
+          <button class="btn btn-main" id="p-gen">生成并自动校验</button>
+          <div class="btnbar">
+            <button class="btn btn-ghost btn-sm" id="p-copyall">复制全部</button>
+            <button class="btn btn-ghost btn-sm" id="p-saveall">全部存入台账</button>
+            <button class="btn btn-ghost btn-sm" id="p-export">导出 CSV</button>
+            <button class="btn btn-ghost btn-sm" id="p-clear">清空结果</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="bar" style="background:var(--ok)"></span>批量自检 <small>按当前参数各生成 1000 条并复核</small></h3>
+          <button class="btn btn-ghost" id="p-selfcheck" style="width:100%;justify-content:center">运行全量自检</button>
+          <div class="selfcheck" id="sc-out"></div>
+        </div>
+      </div>
+
+      <!-- 右：结果 -->
+      <div class="card">
+        <h3><span class="bar"></span>生成结果 <small id="p-stat">—</small></h3>
+        <div class="tblwrap scroll">
+          <table>
+            <thead><tr>
+              <th class="num">#</th><th style="width:230px">证件号码</th><th>关联信息</th><th style="width:110px">校验状态</th><th style="width:150px">操作</th>
+            </tr></thead>
+            <tbody id="p-body"><tr><td colspan="5"><div class="empty"><span class="big">⌘</span>选择证件类型与参数后，点击"生成并自动校验"</div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 单位证件 ================= -->
+  <section class="panel" id="p-org">
+    <div class="grid2">
+      <div>
+        <div class="card">
+          <h3><span class="bar" style="background:var(--usci)"></span>统一社会信用代码 <small>GB 32100-2015</small></h3>
+          <div class="row">
+            <div class="fld"><label>登记管理部门（第 1 位）</label><select id="u-dept"></select></div>
+          </div>
+          <div class="row">
+            <div class="fld"><label>机构类别（第 2 位）</label><select id="u-cat"></select></div>
+          </div>
+          <div class="row">
+            <div class="fld"><label>登记管理机关行政区划（第 3-8 位）</label><select id="u-region"></select></div>
+          </div>
+          <div class="row">
+            <div class="fld"><label>主体标识码生成方式（第 9-17 位）</label>
+              <select id="u-subj">
+                <option value="org">严格模式：8 位数字 + GB 11714 校验位</option>
+                <option value="loose">扩展模式：31 字符集随机（真实库中存在）</option>
+              </select>
+            </div>
+          </div>
+          <div class="hint">两位代码组合取自 GB 32100 表 2 / 表 3 及第 1 号修改单（含代码中心扩展类别）。</div>
+          <div class="row" style="margin-top:12px">
+            <div class="fld"><label>生成数量</label><input type="number" id="u-count" value="10" min="1" max="500"></div>
+          </div>
+          <button class="btn btn-main" id="u-gen" style="background:linear-gradient(135deg,#059669,#10b981);box-shadow:0 4px 14px rgba(5,150,105,.3)">生成并自动校验</button>
+          <div class="btnbar">
+            <button class="btn btn-ghost btn-sm" id="u-copyall">复制全部</button>
+            <button class="btn btn-ghost btn-sm" id="u-saveall">全部存入台账</button>
+            <button class="btn btn-ghost btn-sm" id="u-export">导出 CSV</button>
+            <button class="btn btn-ghost btn-sm" id="u-clear">清空结果</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="bar" style="background:var(--ok)"></span>批量自检 <small>按当前部门 / 类别各生成 1000 条</small></h3>
+          <button class="btn btn-ghost" id="u-selfcheck" style="width:100%;justify-content:center">运行全量自检</button>
+          <div class="selfcheck" id="sc-out-u"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><span class="bar" style="background:var(--usci)"></span>生成结果 <small id="u-stat">—</small></h3>
+        <div class="tblwrap scroll">
+          <table>
+            <thead><tr>
+              <th class="num">#</th><th style="width:230px">统一社会信用代码</th><th>登记管理部门 / 机构类别</th><th style="width:110px">校验状态</th><th style="width:150px">操作</th>
+            </tr></thead>
+            <tbody id="u-body"><tr><td colspan="5"><div class="empty"><span class="big">⌘</span>选择部门与区划后，点击"生成并自动校验"</div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 校验 ================= -->
+  <section class="panel" id="p-verify">
+    <div class="grid2" style="grid-template-columns:360px 1fr">
+      <div class="card">
+        <h3><span class="bar"></span>校验输入</h3>
+        <div class="fld" style="margin-bottom:12px">
+          <label>期望证件类型</label>
+          <select id="v-type">
+            <option value="auto">自动识别 / 全类型匹配</option>
+            <option value="idcard">公民身份证号码</option>
+            <option value="passport">护照证件号码</option>
+            <option value="hkm">港澳居民来往内地通行证</option>
+            <option value="twn">台湾居民来往大陆通行证</option>
+            <option value="usci">统一社会信用代码</option>
+          </select>
+        </div>
+        <div class="fld" style="margin-bottom:12px">
+          <label>待校验号码（每行一条，可批量）</label>
+          <textarea id="v-input" rows="9" placeholder="11010119491231002X&#10;E12345678&#10;H12345678&#10;12345678&#10;91350100M000100Y43"></textarea>
+        </div>
+        <button class="btn btn-main" id="v-run">开始校验</button>
+        <div class="btnbar">
+          <button class="btn btn-ghost btn-sm" id="v-demo">填入示例</button>
+          <button class="btn btn-ghost btn-sm" id="v-clear">清空</button>
+          <button class="btn btn-ghost btn-sm" id="v-save">通过项存入台账</button>
+        </div>
+        <div class="hint" style="margin-top:10px">自动识别模式下，会对同一个号码并行尝试全部 5 类规则，并列出所有匹配结果——便于做"号码 ↔ 证件类型"的匹配测试。</div>
+      </div>
+      <div class="card">
+        <h3><span class="bar"></span>校验报告 <small id="v-stat">—</small></h3>
+        <div id="v-out"><div class="empty"><span class="big">✓</span>粘贴号码后点击"开始校验"</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 台账 ================= -->
+  <section class="panel" id="p-store">
+    <div class="card">
+      <h3><span class="bar" style="background:var(--hkm)"></span>数据台账 <small>浏览器本地存储（localStorage），关闭页面不丢失</small></h3>
+      <div class="row" style="align-items:flex-end">
+        <div class="fld" style="max-width:260px"><label>关键词搜索</label><input type="text" id="st-q" placeholder="号码 / 类型 / 备注"></div>
+        <div class="fld" style="max-width:190px"><label>按类型筛选</label><select id="st-f"></select></div>
+        <div class="fld" style="max-width:150px"><label>状态</label><select id="st-s"><option value="">全部</option><option value="pass">通过</option><option value="warn">提示</option><option value="fail">未通过</option></select></div>
+        <div style="flex:none"><button class="btn btn-ghost btn-sm" id="st-copy">复制全部号码</button></div>
+        <div style="flex:none"><button class="btn btn-ghost btn-sm" id="st-json">导出 JSON</button></div>
+        <div style="flex:none"><button class="btn btn-ghost btn-sm" id="st-csv">导出 CSV</button></div>
+        <div style="flex:none"><button class="btn btn-danger btn-sm" id="st-clear">清空台账</button></div>
+      </div>
+      <div class="tblwrap scroll" style="margin-top:6px">
+        <table>
+          <thead><tr>
+            <th class="num">#</th><th style="width:210px">号码</th><th style="width:170px">证件类型</th>
+            <th>说明</th><th style="width:130px">入库时间</th><th style="width:96px">状态</th><th style="width:96px">操作</th>
+          </tr></thead>
+          <tbody id="st-body"><tr><td colspan="7"><div class="empty"><span class="big">▤</span>台账为空，生成结果后点击"存入台账"</div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 规则 ================= -->
+  <section class="panel" id="p-rule">
+    <div class="rules">
+      <div class="rule">
+        <h4><span style="color:var(--idc)">◆</span> 公民身份证号码</h4>
+        <ul>
+          <li>长度必须为 <b>18 位</b>。</li>
+          <li>前 17 位为数字，第 18 位可为数字或字母 <code>X</code>/<code>x</code>。</li>
+          <li>第 7-14 位为出生日期，须在 <code>19010101</code> — <code>20991231</code> 之间，且年月日真实存在（含闰年判断）。</li>
+          <li>校验位须满足 GB 11643-1999：前 17 位加权 <code>7 9 10 5 8 4 2 1 6 3 7 9 10 5 8 4 2</code>，和值 mod 11 映射 <code>1 0 X 9 8 7 6 5 4 3 2</code>。</li>
+          <li>第 1-6 位为行政区划码；第 15-17 位为顺序码，其中第 17 位奇数为男、偶数为女。</li>
+        </ul>
+        <div class="ref">引用：GB 11643-1999《公民身份号码》</div>
+      </div>
+
+      <div class="rule r2">
+        <h4><span style="color:var(--psp)">◆</span> 护照证件号码</h4>
+        <ul>
+          <li>通用规则：最多 <b>12 位</b>，前 3 位为国籍代码（ISO 3166-1 三位字母），其后为证件序号。</li>
+          <li>中国护照实际为 9 位：<code>E</code>+8 位数字（2012-2017.4 电子普通护照）、<code>E</code>+字母+7 位数字（2017.4 起，字母不含 I、O）、<code>G</code>+8 位数字（旧版普通护照）。</li>
+          <li>因公类：<code>PE/SE/DE</code>+7 位数字（电子），<code>P/S/D</code>+8 位数字（传统本式）。</li>
+          <li>本工具支持两种模式：按用户规则的「国籍代码 + 序号」通用模式，与中国护照实际编码模式。</li>
+        </ul>
+        <div class="ref">引用：国家移民管理局《出入境证件简明手册》、ICAO Doc 9303</div>
+      </div>
+
+      <div class="rule r3">
+        <h4><span style="color:var(--hkm)">◆</span> 港澳居民来往内地通行证</h4>
+        <ul>
+          <li>长度必须为 <b>9 位</b>或 <b>11 位</b>。</li>
+          <li>第 1 位为字母 <code>H</code>（香港签发）或 <code>M</code>（澳门签发）。</li>
+          <li>其后 8 位或 10 位必须为数字：<code>H/M + 8 位数字</code>（9 位）、<code>H/M + 10 位数字</code>（11 位）。</li>
+          <li>证件号码为终身唯一号；正面"换证次数"是独立的 2 位数栏目，不属于号码本体。</li>
+        </ul>
+        <div class="ref">引用：国家移民管理局《出入境证件简明手册》</div>
+      </div>
+
+      <div class="rule r4">
+        <h4><span style="color:var(--tw)">◆</span> 台湾居民来往大陆通行证</h4>
+        <ul>
+          <li>长度必须为 <b>8 位</b>或 <b>10-14 位</b>。</li>
+          <li>8 位证件必须为 8 位数字（终身号）。</li>
+          <li>10-14 位证件：前 10 位必须为数字；其后若只有 3 位，应为 <code>(字母)</code> 形式；若有 4 位，应为 <code>(两位数字)</code> 形式。</li>
+          <li>10 位纯数字号码中，前 8 位为终身号，后 2 位为签发次数。</li>
+          <li>11/12 位在规则中未明确后缀形态，本工具按"前 10 位数字 + 1~2 位数字（签发次数）"宽松判定，并在结果中标注说明。</li>
+        </ul>
+        <div class="ref">引用：国家移民管理局《出入境证件简明手册》</div>
+      </div>
+
+      <div class="rule r5">
+        <h4><span style="color:var(--usci)">◆</span> 统一社会信用代码</h4>
+        <ul>
+          <li>由 18 位数字或大写英文字母组成，<b>不使用 I、O、Z、S、V</b>（许用字符集共 31 个）。</li>
+          <li>第 1 位为登记管理部门代码（1 机构编制 / 2 外交 / 3 司法行政 / 4 文化 / 5 民政 / 6 旅游 / 7 宗教 / 8 工会 / 9 工商 / A 军委改革和编制办 / N 农业 / Y 其他）。</li>
+          <li>第 2 位为机构类别代码，须与第 1 位构成表 3 中的有效组合（如 91 企业、92 个体工商户、93 农民专业合作社、11 机关、12 事业单位、51 社会团体、52 民办非企业单位、53 基金会、A1 军队事业单位、Y1 其他）。</li>
+          <li>第 3-8 位为登记管理机关行政区划码（按 GB/T 2260）。</li>
+          <li>第 9-17 位为主体标识码，应符合组织机构代码规则（GB 11714：8 位数字 + 1 位校验码，校验码为数字或 <code>X</code>）。</li>
+          <li>第 18 位为校验码，按 GB/T 17710：加权 <code>1 3 9 27 19 26 16 17 20 29 25 13 8 24 10 30 28</code> 求和 mod 31，校验位 = (31 − 余数) mod 31，对应 31 字符集下标。</li>
+        </ul>
+        <div class="ref">引用：GB 32100-2015《法人和其他组织统一社会信用代码编码规则》及其第 1 号修改单、GB 11714、GB/T 17710</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3><span class="bar"></span>校验算法实现要点</h3>
+      <div class="rule" style="border-top-color:var(--primary)">
+        <ul>
+          <li>身份证校验位：<code>Σ(dᵢ × Wᵢ) mod 11 → 查表 "10X98765432"</code>。</li>
+          <li>组织机构代码校验位：<code>Σ(dᵢ × 3,7,9,10,5,8,4,2) mod 11</code>，余 0 → <code>0</code>，余 1 → <code>X</code>，否则 <code>11 − 余数</code>。</li>
+          <li>统一代码校验位：<code>(31 − (Σ(idxᵢ × Wᵢ) mod 31)) mod 31</code>，索引取自 <code>0123456789ABCDEFGHJKLMNPQRTUWXY</code>。</li>
+          <li>所有生成结果在写入界面前都会先经过自身校验器复核；"批量自检"用于对当前参数做 1000 次随机抽样验证。</li>
+          <li>本工具输出仅用于系统测试与联调，不具备任何法定证明效力。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ==LOGIC_START==
+/* ============ 基础数据 ============ */
+const PROVINCE_RAW = "11|北京市,12|天津市,13|河北省,14|山西省,15|内蒙古自治区,21|辽宁省,22|吉林省,23|黑龙江省,31|上海市,32|江苏省,33|浙江省,34|安徽省,35|福建省,36|江西省,37|山东省,41|河南省,42|湖北省,43|湖南省,44|广东省,45|广西壮族自治区,46|海南省,50|重庆市,51|四川省,52|贵州省,53|云南省,54|西藏自治区,61|陕西省,62|甘肃省,63|青海省,64|宁夏回族自治区,65|新疆维吾尔自治区,71|中国台湾省,81|中国香港特别行政区,82|中国澳门特别行政区";
+
+const REGION_RAW = "110101北京市东城区,110102北京市西城区,110105北京市朝阳区,110106北京市丰台区,110107北京市石景山区,110108北京市海淀区,110109北京市门头沟区,110111北京市房山区,110112北京市通州区,110113北京市顺义区,110114北京市昌平区,110115北京市大兴区,110116北京市怀柔区,110117北京市平谷区,110118北京市密云区,110119北京市延庆区," +
+"120101天津市和平区,120102天津市河东区,120103天津市河西区,120104天津市南开区,120105天津市河北区,120106天津市红桥区,120110天津市东丽区,120111天津市西青区,120112天津市津南区,120113天津市北辰区,120114天津市武清区,120115天津市宝坻区,120116天津市滨海新区,120117天津市宁河区,120118天津市静海区,120119天津市蓟州区," +
+"130102石家庄市长安区,130104石家庄市桥西区,130105石家庄市新华区,130108石家庄市裕华区,130202唐山市路南区,130302秦皇岛市海港区,130402邯郸市邯山区,130602保定市竞秀区,130702张家口市桥东区,130802承德市双桥区,130902沧州市新华区,131002廊坊市安次区,131102衡水市桃城区,130502邢台市桥东区," +
+"140105太原市小店区,140106太原市迎泽区,140107太原市杏花岭区,140108太原市尖草坪区,140202大同市城区,140302阳泉市城区,140402长治市城区,140502晋城市城区,140602朔州市朔城区,140702晋中市榆次区,140802运城市盐湖区,141002临汾市尧都区,141102吕梁市离石区," +
+"150102呼和浩特市新城区,150103呼和浩特市回民区,150202包头市东河区,150302乌海市海勃湾区,150402赤峰市红山区,150502通辽市科尔沁区,150602鄂尔多斯市东胜区,150702呼伦贝尔市海拉尔区,150802巴彦淖尔市临河区,150902乌兰察布市集宁区," +
+"210102沈阳市和平区,210103沈阳市沈河区,210104沈阳市大东区,210105沈阳市皇姑区,210106沈阳市铁西区,210202大连市中山区,210203大连市西岗区,210204大连市沙河口区,210211大连市甘井子区,210302鞍山市铁东区,210402抚顺市新抚区,210502本溪市平山区,210602丹东市元宝区,210702锦州市古塔区,210802营口市站前区,210902阜新市海州区,211002辽阳市白塔区,211102盘锦市双台子区,211202铁岭市银州区,211302朝阳市双塔区,211402葫芦岛市连山区," +
+"220102长春市南关区,220103长春市宽城区,220104长春市朝阳区,220105长春市二道区,220106长春市绿园区,220202吉林市昌邑区,220302四平市铁西区,220402辽源市龙山区,220502通化市东昌区,220602白山市浑江区,220702松原市宁江区,220802白城市洮北区," +
+"230102哈尔滨市道里区,230103哈尔滨市南岗区,230104哈尔滨市道外区,230108哈尔滨市平房区,230109哈尔滨市松北区,230110哈尔滨市香坊区,230202齐齐哈尔市龙沙区,230302鸡西市鸡冠区,230402鹤岗市向阳区,230502双鸭山市尖山区,230602大庆市萨尔图区,230702伊春市伊春区,230802佳木斯市永红区,230902七台河市新兴区,231002牡丹江市东安区,231102黑河市爱辉区,231202绥化市北林区," +
+"310101上海市黄浦区,310104上海市徐汇区,310105上海市长宁区,310106上海市静安区,310107上海市普陀区,310109上海市虹口区,310110上海市杨浦区,310112上海市闵行区,310113上海市宝山区,310114上海市嘉定区,310115上海市浦东新区,310116上海市金山区,310117上海市松江区,310118上海市青浦区,310120上海市奉贤区,310151上海市崇明区," +
+"320102南京市玄武区,320104南京市秦淮区,320105南京市建邺区,320106南京市鼓楼区,320111南京市浦口区,320113南京市栖霞区,320114南京市雨花台区,320115南京市江宁区,320205无锡市锡山区,320206无锡市惠山区,320211无锡市滨湖区,320213无锡市梁溪区,320302徐州市鼓楼区,320402常州市天宁区,320505苏州市虎丘区,320507苏州市相城区,320508苏州市姑苏区,320509苏州市吴江区,320602南通市崇川区,320703连云港市连云区,320803淮安市淮安区,320902盐城市亭湖区,321002扬州市广陵区,321102镇江市京口区,321202泰州市海陵区,321302宿迁市宿城区," +
+"330102杭州市上城区,330103杭州市下城区,330104杭州市江干区,330105杭州市拱墅区,330106杭州市西湖区,330108杭州市滨江区,330110杭州市余杭区,330111杭州市富阳区,330203宁波市海曙区,330205宁波市江北区,330206宁波市北仑区,330212宁波市鄞州区,330302温州市鹿城区,330402嘉兴市南湖区,330502湖州市吴兴区,330602绍兴市越城区,330702金华市婺城区,330802衢州市柯城区,330902舟山市定海区,331002台州市椒江区,331102丽水市莲都区," +
+"340102合肥市瑶海区,340103合肥市庐阳区,340104合肥市蜀山区,340111合肥市包河区,340202芜湖市镜湖区,340302蚌埠市龙子湖区,340402淮南市大通区,340502马鞍山市金家庄区,340602淮北市杜集区,340702铜陵市铜官山区,340802安庆市迎江区,340902黄山市屯溪区,341102滁州市琅琊区,341202阜阳市颍州区,341302宿州市埇桥区,341502六安市金安区,341602亳州市谯城区,341702池州市贵池区,341802宣城市宣州区," +
+"350102福州市鼓楼区,350103福州市台江区,350104福州市仓山区,350105福州市马尾区,350111福州市晋安区,350203厦门市思明区,350205厦门市海沧区,350206厦门市湖里区,350211厦门市集美区,350212厦门市同安区,350302莆田市城厢区,350402三明市梅列区,350502泉州市鲤城区,350602漳州市芗城区,350702南平市延平区,350802龙岩市新罗区,350902宁德市蕉城区," +
+"360102南昌市东湖区,360103南昌市西湖区,360104南昌市青云谱区,360111南昌市青山湖区,360202景德镇市昌江区,360302萍乡市安源区,360402九江市庐山区,360502新余市渝水区,360602鹰潭市月湖区,360702赣州市章贡区,360802吉安市吉州区,360902宜春市袁州区,361002抚州市临川区,361102上饶市信州区," +
+"370102济南市历下区,370103济南市市中区,370104济南市槐荫区,370105济南市天桥区,370112济南市历城区,370202青岛市市南区,370203青岛市市北区,370211青岛市黄岛区,370212青岛市崂山区,370213青岛市李沧区,370214青岛市城阳区,370302淄博市淄川区,370402枣庄市市中区,370502东营市东营区,370602烟台市芝罘区,370702潍坊市潍城区,370802济宁市任城区,370902泰安市泰山区,371002威海市环翠区,371102日照市东港区,371202莱芜市莱城区,371302临沂市兰山区,371402德州市德城区,371502聊城市东昌府区,371602滨州市滨城区,371702菏泽市牡丹区," +
+"410102郑州市中原区,410103郑州市二七区,410104郑州市管城回族区,410105郑州市金水区,410106郑州市上街区,410108郑州市惠济区,410202开封市龙亭区,410302洛阳市老城区,410303洛阳市西工区,410305洛阳市涧西区,410402平顶山市新华区,410502安阳市文峰区,410602鹤壁市鹤山区,410702新乡市红旗区,410802焦作市解放区,410902濮阳市华龙区,411002许昌市魏都区,411102漯河市源汇区,411202三门峡市湖滨区,411302南阳市宛城区,411402商丘市梁园区,411502信阳市浉河区,411602周口市川汇区,411702驻马店市驿城区," +
+"420102武汉市江岸区,420103武汉市江汉区,420104武汉市硚口区,420105武汉市汉阳区,420106武汉市武昌区,420107武汉市青山区,420111武汉市洪山区,420112武汉市东西湖区,420113武汉市汉南区,420114武汉市蔡甸区,420115武汉市江夏区,420116武汉市黄陂区,420117武汉市新洲区,420202黄石市黄石港区,420302十堰市茅箭区,420502宜昌市西陵区,420602襄阳市襄城区,420702鄂州市梁子湖区,420802荆门市东宝区,420902孝感市孝南区,421002荆州市沙市区,421102黄冈市黄州区,421202咸宁市咸安区,421302随州市曾都区," +
+"430102长沙市芙蓉区,430103长沙市天心区,430104长沙市岳麓区,430105长沙市开福区,430111长沙市雨花区,430112长沙市望城区,430202株洲市荷塘区,430302湘潭市雨湖区,430402衡阳市珠晖区,430502邵阳市双清区,430602岳阳市岳阳楼区,430702常德市武陵区,430802张家界市永定区,430902益阳市资阳区,431002郴州市北湖区,431102永州市零陵区,431202怀化市鹤城区,431302娄底市娄星区," +
+"440103广州市荔湾区,440104广州市越秀区,440105广州市海珠区,440106广州市天河区,440111广州市白云区,440112广州市黄埔区,440113广州市番禺区,440114广州市花都区,440115广州市南沙区,440117广州市从化区,440118广州市增城区,440303深圳市罗湖区,440304深圳市福田区,440305深圳市南山区,440306深圳市宝安区,440307深圳市龙岗区,440308深圳市盐田区,440309深圳市龙华区,440310深圳市坪山区,440402珠海市香洲区,440403珠海市斗门区,440404珠海市金湾区,440507汕头市龙湖区,440604佛山市禅城区,440605佛山市南海区,440606佛山市顺德区,440703江门市蓬江区,440802湛江市赤坎区,440902茂名市茂南区,441202肇庆市端州区,441302惠州市惠城区,441402梅州市梅江区,441502汕尾市城区,441602河源市源城区,441702阳江市江城区,441802清远市清城区,441900东莞市,442000中山市,445102潮州市湘桥区,445202揭阳市榕城区,445302云浮市云城区,440203韶关市武江区," +
+"450102南宁市兴宁区,450103南宁市青秀区,450105南宁市江南区,450107南宁市西乡塘区,450202柳州市城中区,450302桂林市秀峰区,450402梧州市万秀区,450502北海市海城区,450602防城港市港口区,450702钦州市钦南区,450802贵港市港北区,450902玉林市玉州区,451002百色市右江区,451102贺州市八步区,451202河池市金城江区,451302来宾市兴宾区,451402崇左市江州区," +
+"460105海口市秀英区,460106海口市龙华区,460107海口市琼山区,460202三亚市海棠区,460203三亚市吉阳区,460302三沙市西沙区,460402儋州市," +
+"500101重庆市万州区,500102重庆市涪陵区,500103重庆市渝中区,500104重庆市大渡口区,500105重庆市江北区,500106重庆市沙坪坝区,500107重庆市九龙坡区,500108重庆市南岸区,500109重庆市北碚区,500110重庆市綦江区,500111重庆市大足区,500112重庆市渝北区,500113重庆市巴南区,500114重庆市黔江区,500115重庆市长寿区,500116重庆市江津区,500117重庆市合川区,500118重庆市永川区,500119重庆市南川区," +
+"510104成都市锦江区,510105成都市青羊区,510106成都市金牛区,510107成都市武侯区,510108成都市成华区,510112成都市龙泉驿区,510113成都市青白江区,510114成都市新都区,510115成都市温江区,510116成都市双流区,510117成都市郫都区,510302自贡市自流井区,510402攀枝花市东区,510502泸州市江阳区,510602德阳市旌阳区,510703绵阳市涪城区,510803广元市利州区,510903遂宁市船山区,511002内江市市中区,511102乐山市市中区,511302南充市顺庆区,511402眉山市东坡区,511502宜宾市翠屏区,511602广安市广安区,511702达州市通川区,511802雅安市雨城区,511902巴中市巴州区,512002资阳市雁江区," +
+"520102贵阳市南明区,520103贵阳市云岩区,520111贵阳市花溪区,520112贵阳市乌当区,520113贵阳市白云区,520201六盘水市钟山区,520302遵义市红花岗区,520402安顺市西秀区,520502毕节市七星关区,520602铜仁市碧江区,522601凯里市,522701都匀市," +
+"530102昆明市五华区,530103昆明市盘龙区,530111昆明市官渡区,530112昆明市西山区,530113昆明市东川区,530302曲靖市麒麟区,530402玉溪市红塔区,530502保山市隆阳区,530602昭通市昭阳区,530702丽江市古城区,530802普洱市思茅区,530902临沧市临翔区," +
+"540102拉萨市城关区,540202日喀则市桑珠孜区,540302昌都市卡若区,540402林芝市巴宜区,540502山南市乃东区,540602那曲市色尼区," +
+"610102西安市新城区,610103西安市碑林区,610104西安市莲湖区,610111西安市灞桥区,610112西安市未央区,610113西安市雁塔区,610114西安市阎良区,610115西安市临潼区,610116西安市长安区,610202铜川市王益区,610302宝鸡市渭滨区,610402咸阳市秦都区,610502渭南市临渭区,610602延安市宝塔区,610702汉中市汉台区,610802榆林市榆阳区,610902安康市汉滨区,611002商洛市商州区," +
+"620102兰州市城关区,620103兰州市七里河区,620104兰州市西固区,620105兰州市安宁区,620200嘉峪关市,620302金昌市金川区,620402白银市白银区,620502天水市秦州区,620602武威市凉州区,620702张掖市甘州区,620802平凉市崆峒区,620902酒泉市肃州区,621002庆阳市西峰区,621102定西市安定区,621202陇南市武都区," +
+"630102西宁市城东区,630103西宁市城中区,630104西宁市城西区,630105西宁市城北区,630202海东市乐都区," +
+"640104银川市兴庆区,640105银川市西夏区,640106银川市金凤区,640202石嘴山市大武口区,640302吴忠市利通区,640402固原市原州区,640502中卫市沙坡头区," +
+"650102乌鲁木齐市天山区,650103乌鲁木齐市沙依巴克区,650104乌鲁木齐市新市区,650105乌鲁木齐市水磨沟区,650202克拉玛依市独山子区,650402吐鲁番市高昌区,650502哈密市伊州区,652301昌吉市,652901阿克苏市,653101喀什市,654002伊宁市,659001石河子市," +
+"710000中国台湾省,810000中国香港特别行政区,820000中国澳门特别行政区";
+
+function parsePairs(raw){
+  return raw.split(",").map(function(s){
+    var i = s.indexOf("|");
+    if(i > 0) return { code: s.slice(0, i), name: s.slice(i + 1) };
+    return { code: s.slice(0, 6), name: s.slice(6) };
+  }).filter(function(x){ return x.code && x.name; });
+}
+const PROVINCES = parsePairs(PROVINCE_RAW);
+/* 地市级行政区划码（统一社会信用代码第 3-8 位通常使用地市级码，如 440300 深圳市） */
+const CITY_RAW = "110100北京市市辖区,120100天津市市辖区,310100上海市市辖区,500100重庆市市辖区,500200重庆市县," +
+"130100石家庄市,130200唐山市,130300秦皇岛市,130400邯郸市,130500邢台市,130600保定市,130700张家口市,130800承德市,130900沧州市,131000廊坊市,131100衡水市," +
+"140100太原市,140200大同市,140300阳泉市,140400长治市,140500晋城市,140600朔州市,140700晋中市,140800运城市,140900忻州市,141000临汾市,141100吕梁市," +
+"150100呼和浩特市,150200包头市,150300乌海市,150400赤峰市,150500通辽市,150600鄂尔多斯市,150700呼伦贝尔市,150800巴彦淖尔市,150900乌兰察布市,152200兴安盟,152500锡林郭勒盟,152900阿拉善盟," +
+"210100沈阳市,210200大连市,210300鞍山市,210400抚顺市,210500本溪市,210600丹东市,210700锦州市,210800营口市,210900阜新市,211000辽阳市,211100盘锦市,211200铁岭市,211300朝阳市,211400葫芦岛市," +
+"220100长春市,220200吉林市,220300四平市,220400辽源市,220500通化市,220600白山市,220700松原市,220800白城市,222400延边朝鲜族自治州," +
+"230100哈尔滨市,230200齐齐哈尔市,230300鸡西市,230400鹤岗市,230500双鸭山市,230600大庆市,230700伊春市,230800佳木斯市,230900七台河市,231000牡丹江市,231100黑河市,231200绥化市,232700大兴安岭地区," +
+"320100南京市,320200无锡市,320300徐州市,320400常州市,320500苏州市,320600南通市,320700连云港市,320800淮安市,320900盐城市,321000扬州市,321100镇江市,321200泰州市,321300宿迁市," +
+"330100杭州市,330200宁波市,330300温州市,330400嘉兴市,330500湖州市,330600绍兴市,330700金华市,330800衢州市,330900舟山市,331000台州市,331100丽水市," +
+"340100合肥市,340200芜湖市,340300蚌埠市,340400淮南市,340500马鞍山市,340600淮北市,340700铜陵市,340800安庆市,341000黄山市,341100滁州市,341200阜阳市,341300宿州市,341500六安市,341600亳州市,341700池州市,341800宣城市," +
+"350100福州市,350200厦门市,350300莆田市,350400三明市,350500泉州市,350600漳州市,350700南平市,350800龙岩市,350900宁德市," +
+"360100南昌市,360200景德镇市,360300萍乡市,360400九江市,360500新余市,360600鹰潭市,360700赣州市,360800吉安市,360900宜春市,361000抚州市,361100上饶市," +
+"370100济南市,370200青岛市,370300淄博市,370400枣庄市,370500东营市,370600烟台市,370700潍坊市,370800济宁市,370900泰安市,371000威海市,371100日照市,371200莱芜市,371300临沂市,371400德州市,371500聊城市,371600滨州市,371700菏泽市," +
+"410100郑州市,410200开封市,410300洛阳市,410400平顶山市,410500安阳市,410600鹤壁市,410700新乡市,410800焦作市,410900濮阳市,411000许昌市,411100漯河市,411200三门峡市,411300南阳市,411400商丘市,411500信阳市,411600周口市,411700驻马店市,419001济源市," +
+"420100武汉市,420200黄石市,420300十堰市,420500宜昌市,420600襄阳市,420700鄂州市,420800荆门市,420900孝感市,421000荆州市,421100黄冈市,421200咸宁市,421300随州市,422800恩施土家族苗族自治州,429004仙桃市,429005潜江市,429006天门市,429021神农架林区," +
+"430100长沙市,430200株洲市,430300湘潭市,430400衡阳市,430500邵阳市,430600岳阳市,430700常德市,430800张家界市,430900益阳市,431000郴州市,431100永州市,431200怀化市,431300娄底市,433100湘西土家族苗族自治州," +
+"440100广州市,440200韶关市,440300深圳市,440400珠海市,440500汕头市,440600佛山市,440700江门市,440800湛江市,440900茂名市,441200肇庆市,441300惠州市,441400梅州市,441500汕尾市,441600河源市,441700阳江市,441800清远市,441900东莞市,442000中山市,445100潮州市,445200揭阳市,445300云浮市," +
+"450100南宁市,450200柳州市,450300桂林市,450400梧州市,450500北海市,450600防城港市,450700钦州市,450800贵港市,450900玉林市,451000百色市,451100贺州市,451200河池市,451300来宾市,451400崇左市," +
+"460100海口市,460200三亚市,460300三沙市,460400儋州市,469001五指山市,469002琼海市,469005文昌市,469006万宁市,469007东方市,469021定安县,469022屯昌县,469023澄迈县,469024临高县,469025白沙黎族自治县,469026昌江黎族自治县,469027乐东黎族自治县,469028陵水黎族自治县,469029保亭黎族苗族自治县,469030琼中黎族苗族自治县," +
+"510100成都市,510300自贡市,510400攀枝花市,510500泸州市,510600德阳市,510700绵阳市,510800广元市,510900遂宁市,511000内江市,511100乐山市,511300南充市,511400眉山市,511500宜宾市,511600广安市,511700达州市,511800雅安市,511900巴中市,512000资阳市,513200阿坝藏族羌族自治州,513300甘孜藏族自治州,513400凉山彝族自治州," +
+"520100贵阳市,520200六盘水市,520300遵义市,520400安顺市,520500毕节市,520600铜仁市,522300黔西南布依族苗族自治州,522600黔东南苗族侗族自治州,522700黔南布依族苗族自治州," +
+"530100昆明市,530300曲靖市,530400玉溪市,530500保山市,530600昭通市,530700丽江市,530800普洱市,530900临沧市,532300楚雄彝族自治州,532500红河哈尼族彝族自治州,532600文山壮族苗族自治州,532800西双版纳傣族自治州,532900大理白族自治州,533100德宏傣族景颇族自治州,533300怒江傈僳族自治州,533400迪庆藏族自治州," +
+"540100拉萨市,540200日喀则市,540300昌都市,540400林芝市,540500山南市,540600那曲市,542500阿里地区," +
+"610100西安市,610200铜川市,610300宝鸡市,610400咸阳市,610500渭南市,610600延安市,610700汉中市,610800榆林市,610900安康市,611000商洛市," +
+"620100兰州市,620200嘉峪关市,620300金昌市,620400白银市,620500天水市,620600武威市,620700张掖市,620800平凉市,620900酒泉市,621000庆阳市,621100定西市,621200陇南市,622900临夏回族自治州,623000甘南藏族自治州," +
+"630100西宁市,630200海东市,632200海北藏族自治州,632300黄南藏族自治州,632500海南藏族自治州,632600果洛藏族自治州,632700玉树藏族自治州,632800海西蒙古族藏族自治州," +
+"640100银川市,640200石嘴山市,640300吴忠市,640400固原市,640500中卫市," +
+"650100乌鲁木齐市,650200克拉玛依市,650400吐鲁番市,650500哈密市,652300昌吉回族自治州,652700博尔塔拉蒙古自治州,652800巴音郭楞蒙古自治州,652900阿克苏地区,653000克孜勒苏柯尔克孜自治州,653100喀什地区,653200和田地区,654000伊犁哈萨克自治州,654200塔城地区,654300阿勒泰地区,659001石河子市,659002阿拉尔市,659003图木舒克市,659004五家渠市,659005北屯市,659006铁门关市,659007双河市,659008可克达拉市,659009昆玉市,659010胡杨河市";
+
+const DISTRICTS = parsePairs(REGION_RAW);
+const CITIES = parsePairs(CITY_RAW);
+const REGIONS = DISTRICTS.concat(CITIES);
+const REGION_MAP = {}; REGIONS.forEach(function(r){ REGION_MAP[r.code] = r.name; });
+const PROV_MAP = {}; PROVINCES.forEach(function(p){ PROV_MAP[p.code] = p.name; });
+
+/* 国籍 / 地区代码（ISO 3166-1 alpha-3） */
+const COUNTRIES = [
+  ["CHN","中国"],["HKG","中国香港"],["MAC","中国澳门"],["TWN","中国台湾"],
+  ["USA","美国"],["JPN","日本"],["KOR","韩国"],["GBR","英国"],["FRA","法国"],["DEU","德国"],
+  ["RUS","俄罗斯"],["SGP","新加坡"],["MYS","马来西亚"],["THA","泰国"],["VNM","越南"],
+  ["PHL","菲律宾"],["IDN","印度尼西亚"],["IND","印度"],["AUS","澳大利亚"],["NZL","新西兰"],
+  ["CAN","加拿大"],["BRA","巴西"],["MEX","墨西哥"],["ARG","阿根廷"],["ZAF","南非"],
+  ["ITA","意大利"],["ESP","西班牙"],["NLD","荷兰"],["CHE","瑞士"],["SWE","瑞典"],["NOR","挪威"]
+];
+const COUNTRY_MAP = {}; COUNTRIES.forEach(function(c){ COUNTRY_MAP[c[0]] = c[1]; });
+
+/* 统一社会信用代码：登记管理部门 + 机构类别（GB 32100-2015 表2/表3 + 第1号修改单 + 代码中心扩展） */
+const USCI_DEPT = {
+  "1":{ name:"机构编制", cats:{ "1":"机关","2":"事业单位","3":"编办直接管理机构编制的群众团体","9":"其他" } },
+  "2":{ name:"外交", cats:{ "1":"外国常驻新闻机构","9":"其他" } },
+  "3":{ name:"司法行政", cats:{ "1":"律师执业机构","2":"公证处","3":"基层法律服务所","4":"司法鉴定机构","5":"仲裁委员会","6":"商事调解组织","9":"其他" } },
+  "4":{ name:"文化", cats:{ "1":"外国在华文化中心","9":"其他" } },
+  "5":{ name:"民政", cats:{ "1":"社会团体","2":"民办非企业单位","3":"基金会","4":"村民委员会","5":"居民委员会","9":"其他" } },
+  "6":{ name:"旅游", cats:{ "1":"外国政府旅游部门常驻代表机构","2":"港澳台地区旅游部门常驻内地(大陆)代表机构","9":"其他" } },
+  "7":{ name:"宗教", cats:{ "1":"宗教活动场所","2":"宗教院校","9":"其他" } },
+  "8":{ name:"工会", cats:{ "1":"基层工会","2":"非法人工会组织","9":"其他" } },
+  "9":{ name:"工商(市场监管)", cats:{ "1":"企业","2":"个体工商户","3":"农民专业合作社" } },
+  "A":{ name:"中央军委改革和编制办公室", cats:{ "1":"军队文职人员用人单位(军队事业单位)","9":"其他" } },
+  "G":{ name:"公安", cats:{ "1":"境外非政府组织代表机构" } },
+  "J":{ name:"住房城乡建设", cats:{ "1":"业主大会" } },
+  "N":{ name:"农业(农业农村)", cats:{ "1":"组级集体经济组织","2":"村级集体经济组织","3":"乡镇级集体经济组织","9":"其他" } },
+  "Q":{ name:"侨联", cats:{ "1":"区县级侨联组织","2":"乡镇级侨联组织","3":"村级侨联组织" } },
+  "Y":{ name:"其他", cats:{ "1":"其他" } }
+};
+const USCI_DEPT_KEYS = Object.keys(USCI_DEPT);
+
+/* ============ 算法 ============ */
+const ID_W = [7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2];
+const ID_C = ["1","0","X","9","8","7","6","5","4","3","2"];
+const ORG_W = [3,7,9,10,5,8,4,2];
+const USCI_ALPHA = "0123456789ABCDEFGHJKLMNPQRTUWXY";
+const USCI_W = [1,3,9,27,19,26,16,17,20,29,25,13,8,24,10,30,28];
+
+function idCheckDigit(first17){
+  var s = 0;
+  for(var i = 0; i < 17; i++) s += parseInt(first17.charAt(i), 10) * ID_W[i];
+  return ID_C[s % 11];
+}
+function orgCheckDigit(first8){
+  var s = 0;
+  for(var i = 0; i < 8; i++) s += parseInt(first8.charAt(i), 10) * ORG_W[i];
+  var c = 11 - (s % 11);
+  if(c === 11) return "0";
+  if(c === 10) return "X";
+  return String(c);
+}
+function usciCheckDigit(first17){
+  var s = 0;
+  for(var i = 0; i < 17; i++){
+    var idx = USCI_ALPHA.indexOf(first17.charAt(i));
+    if(idx < 0) return null;
+    s += idx * USCI_W[i];
+  }
+  return USCI_ALPHA[(31 - (s % 31)) % 31];
+}
+function isLeap(y){ return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0; }
+function daysInMonth(y, m){
+  var d = [31,28,31,30,31,30,31,31,30,31,30,31];
+  if(m === 2 && isLeap(y)) return 29;
+  return d[m - 1] || 0;
+}
+
+/* ============ 通用工具 ============ */
+function rnd(n){ return Math.floor(Math.random() * n); }
+function pick(a){ return a[rnd(a.length)]; }
+function digits(n){ var s = ""; for(var i = 0; i < n; i++) s += rnd(10); return s; }
+function pad(n, w){ var s = String(n); while(s.length < w) s = "0" + s; return s; }
+function randomDateRange(d1, d2){
+  var a = new Date(d1 + "T00:00:00").getTime();
+  var b = new Date(d2 + "T00:00:00").getTime();
+  if(isNaN(a) || isNaN(b)) { a = Date.UTC(1980,0,1); b = Date.UTC(2005,11,31); }
+  if(a > b){ var t = a; a = b; b = t; }
+  var t2 = a + Math.floor(Math.random() * (b - a + 1));
+  var dt = new Date(t2);
+  return { y: dt.getFullYear(), m: dt.getMonth() + 1, d: dt.getDate() };
+}
+
+/* ============ 结果对象工厂 ============ */
+function mkResult(type, typeName, ok, level, items, meta, summary){
+  return { type:type, typeName:typeName, ok:ok, level:level, items:items, meta:meta || {}, summary:summary || "" };
+}
+function it(label, ok, level, detail){ return { label:label, ok:ok, level:level, detail:detail }; }
+
+/* ============ 生成器 ============ */
+function genIdCard(opt){
+  opt = opt || {};
+  var region = opt.region && /^\d{6}$/.test(opt.region) ? opt.region : pick(DISTRICTS).code;
+  var birth = opt.birth || (opt.d1 && opt.d2 ? randomDateRange(opt.d1, opt.d2) : randomDateRange("1980-01-01","2005-12-31"));
+  var sex = opt.sex || "random";
+  if(sex === "random") sex = Math.random() < 0.5 ? "M" : "F";
+  var seq = pad(1 + rnd(998), 3).split("");
+  var last = parseInt(seq[2], 10);
+  if(sex === "M" && last % 2 === 0) last = last === 8 ? 9 : last + 1;
+  if(sex === "F" && last % 2 === 1) last = last === 9 ? 8 : last + 1;
+  seq[2] = String(last);
+  var first17 = region + pad(birth.y, 4) + pad(birth.m, 2) + pad(birth.d, 2) + seq.join("");
+  return {
+    number: first17 + idCheckDigit(first17),
+    meta: {
+      sex: sex,
+      sexText: sex === "M" ? "男" : "女",
+      birthday: pad(birth.y,4) + "-" + pad(birth.m,2) + "-" + pad(birth.d,2),
+      region: region,
+      regionName: REGION_MAP[region] || PROV_MAP[region.slice(0,2)] || "未收录区划"
+    }
+  };
+}
+
+function genPassport(opt){
+  opt = opt || {};
+  if(opt.mode === "cn"){
+    var kind = opt.kind || "E";
+    if(kind === "EX"){
+      var letters = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+      return { number: "E" + pick(letters.split("")) + digits(7), meta:{ kind:"E+字母+7位数字（电子普通护照 2017.4 起）" } };
+    }
+    if(kind === "PE" || kind === "SE" || kind === "DE"){
+      return { number: kind + digits(7), meta:{ kind: kind + "+7位数字（电子因公护照）" } };
+    }
+    return { number: kind + digits(8), meta:{ kind: kind + "+8位数字" } };
+  }
+  var cc = opt.country && /^[A-Za-z]{3}$/.test(opt.country) ? opt.country.toUpperCase() : "CHN";
+  var total = Math.max(4, Math.min(12, parseInt(opt.length, 10) || 9));
+  var tailLen = total - 3;
+  var set = opt.tailSet || "num";
+  var pool = set === "alpha" ? "ABCDEFGHJKLMNPQRSTUVWXYZ" : set === "alnum" ? "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ" : "0123456789";
+  var tail = "";
+  for(var i = 0; i < tailLen; i++) tail += pool.charAt(rnd(pool.length));
+  return { number: cc + tail, meta:{ kind: "国籍代码 + 序号（通用模式）", country: cc, countryName: COUNTRY_MAP[cc] || "未收录代码" } };
+}
+
+function genHKMPermit(opt){
+  opt = opt || {};
+  var p = opt.prefix && (opt.prefix === "H" || opt.prefix === "M") ? opt.prefix : (Math.random() < 0.5 ? "H" : "M");
+  var len = opt.length === 9 || opt.length === 11 ? opt.length : (Math.random() < 0.5 ? 9 : 11);
+  var number = p + digits(len - 1);
+  return { number: number, meta:{ kind: len === 9 ? "9 位：H/M + 8 位数字" : "11 位：H/M + 10 位数字", place: p === "H" ? "香港签发" : "澳门签发" } };
+}
+
+function genTwnPermit(opt){
+  opt = opt || {};
+  var f = opt.format || "random";
+  if(f === "random") f = pick(["8","10","13","14"]);
+  var n;
+  if(f === "8") n = digits(8);
+  else if(f === "10") n = digits(10);
+  else if(f === "13") n = digits(10) + "(" + pick("ABCDEFGHJKLMNPQRSTUVWXYZ".split("")) + ")";
+  else n = digits(10) + "(" + digits(2) + ")";
+  return { number: n, meta:{ kind: f + " 位形式" } };
+}
+
+function randomOrgCode(){
+  var base = digits(8);
+  return base + orgCheckDigit(base);
+}
+
+function genUSCI(opt){
+  opt = opt || {};
+  var dept = opt.dept && USCI_DEPT[opt.dept] ? opt.dept : "9";
+  var cats = Object.keys(USCI_DEPT[dept].cats);
+  var cat = opt.cat && USCI_DEPT[dept].cats[opt.cat] ? opt.cat : pick(cats);
+  var region = opt.region && /^\d{6}$/.test(opt.region) ? opt.region : pick(REGIONS).code;
+  var subj;
+  if(opt.subject === "loose"){
+    do{
+      subj = "";
+      for(var i = 0; i < 9; i++) subj += USCI_ALPHA.charAt(rnd(31));
+    } while(/^\d{8}[0-9X]$/.test(subj)); /* 避免误入 GB 11714 严格形态而被判为不一致 */
+  } else {
+    subj = randomOrgCode();
+  }
+  var first17 = dept + cat + region + subj;
+  return {
+    number: first17 + usciCheckDigit(first17),
+    meta: {
+      dept: dept, deptName: USCI_DEPT[dept].name,
+      cat: cat, catName: USCI_DEPT[dept].cats[cat],
+      region: region, regionName: REGION_MAP[region] || PROV_MAP[region.slice(0,2)] || "未收录区划"
+    }
+  };
+}
+
+/* ============ 校验器 ============ */
+function validateIdCard(raw){
+  var items = [], s = String(raw).trim();
+  var meta = {};
+  items.push(it("长度", s.length === 18, s.length === 18 ? "pass" : "fail", s.length + " 位" + (s.length === 18 ? "" : "（应为 18 位）")));
+  var charset = /^\d{17}[0-9Xx]$/.test(s);
+  items.push(it("字符构成", charset, charset ? "pass" : "fail", charset ? "前 17 位数字 + 第 18 位数字或 X" : "须为 17 位数字 + 数字/X"));
+  if(s.length !== 18 || !charset){
+    return mkResult("idcard","公民身份证号码",false,"fail",items,meta,"结构不符合 GB 11643-1999");
+  }
+  var up = s.toUpperCase();
+  var region = s.slice(0,6), bs = s.slice(6,14);
+  var y = parseInt(bs.slice(0,4),10), m = parseInt(bs.slice(4,6),10), d = parseInt(bs.slice(6,8),10);
+  var dateOkChars = /^\d{8}$/.test(bs);
+  var dateOk = false, dateDetail = "";
+  if(!dateOkChars){ dateDetail = "出生日期段含非数字字符"; }
+  else if(y < 1901 || y > 2099){ dateDetail = "年份 " + y + " 超出 1901—2099"; }
+  else if(m < 1 || m > 12){ dateDetail = "月份 " + m + " 非法"; }
+  else if(d < 1 || d > daysInMonth(y, m)){ dateDetail = "日期 " + y + "-" + m + "-" + d + " 不存在"; }
+  else { dateOk = true; dateDetail = y + "-" + pad(m,2) + "-" + pad(d,2) + "（区间内且日期真实）"; }
+  items.push(it("出生日期段(7-14位)", dateOk, dateOk ? "pass" : "fail", dateDetail));
+  meta.birthday = dateOk ? (y + "-" + pad(m,2) + "-" + pad(d,2)) : bs;
+
+  var provOk = !!PROV_MAP[region.slice(0,2)];
+  var fullOk = !!REGION_MAP[region];
+  var regLevel = fullOk ? "pass" : (provOk ? "warn" : "fail");
+  items.push(it("行政区划码(1-6位)", provOk, regLevel,
+    fullOk ? (region + " " + REGION_MAP[region])
+           : provOk ? (region + " 省级前缀有效（" + PROV_MAP[region.slice(0,2)] + "），具体区划未收录于内置表")
+                    : (region + " 前 2 位不是有效省级代码")));
+  meta.regionName = REGION_MAP[region] || PROV_MAP[region.slice(0,2)] || "未知";
+
+  var exp = idCheckDigit(s.slice(0,17));
+  var ckOk = exp === up.charAt(17);
+  items.push(it("校验位(GB 11643)", ckOk, ckOk ? "pass" : "fail", "应为 " + exp + "，实际 " + up.charAt(17)));
+
+  var sexDigit = parseInt(s.charAt(16), 10);
+  meta.sexText = (sexDigit % 2 === 1) ? "男" : "女";
+  meta.sex = (sexDigit % 2 === 1) ? "M" : "F";
+  meta.seq = s.slice(14,17);
+  items.push(it("顺序码(15-17位)", true, "pass", s.slice(14,17) + " → " + meta.sexText));
+
+  var allHard = items.filter(function(x){ return x.level !== "warn"; }).every(function(x){ return x.ok; });
+  var hasWarn = items.some(function(x){ return x.level === "warn"; });
+  return mkResult("idcard","公民身份证号码", allHard, allHard ? (hasWarn ? "warn" : "pass") : "fail", items, meta,
+    allHard ? (hasWarn ? "结构合规（行政区划码未收录，仅影响真实性）" : "完全合规") : "校验未通过");
+}
+
+function validatePassport(raw){
+  var items = [], s = String(raw).trim().toUpperCase(), meta = {};
+  var intlOk = /^[A-Z]{3}[0-9A-Z]{1,9}$/.test(s) && s.length <= 12 && s.length >= 4;
+  var cnKinds = ["E","G","PE","SE","DE","P","S","D"];
+  var cnOk = false, cnDetail = "";
+  for(var i = 0; i < cnKinds.length; i++){
+    var k = cnKinds[i];
+    if(s.indexOf(k) !== 0) continue;
+    var rest = s.slice(k.length);
+    if((k === "PE" || k === "SE" || k === "DE") && /^\d{7}$/.test(rest)){ cnOk = true; cnDetail = k + " + 7 位数字（电子因公护照）"; break; }
+    if(k === "E" && /^\d{8}$/.test(rest)){ cnOk = true; cnDetail = "E + 8 位数字（电子普通护照）"; break; }
+    if(k === "E" && /^[A-HJ-NP-Z]\d{7}$/.test(rest)){ cnOk = true; cnDetail = "E + 字母 + 7 位数字（2017.4 起规则）"; break; }
+    if((k === "G" || k === "P" || k === "S" || k === "D") && /^\d{8}$/.test(rest)){ cnOk = true; cnDetail = k + " + 8 位数字（传统本式护照）"; break; }
+  }
+  var lenOk = s.length <= 12 && s.length >= 4;
+  items.push(it("长度", lenOk, lenOk ? "pass" : "fail", s.length + " 位（规则要求最多 12 位）"));
+
+  if(intlOk){
+    var cc = s.slice(0,3);
+    meta.country = cc;
+    meta.countryName = COUNTRY_MAP[cc] || "未收录";
+    meta.kind = "国籍代码 + 序号（通用模式）";
+    items.push(it("前 3 位国籍代码", true, COUNTRY_MAP[cc] ? "pass" : "warn", cc + " " + (COUNTRY_MAP[cc] ? "→ " + COUNTRY_MAP[cc] : "（不在内置国籍代码表中）")));
+    items.push(it("第 4 位起序号", true, "pass", s.slice(3) + "（" + (s.slice(3).length) + " 位字母/数字）"));
+    items.push(it("匹配模式", true, "pass", "国际通用规则：3 位国籍代码 + 序号"));
+    var hasWarn0 = !COUNTRY_MAP[cc];
+    return mkResult("passport","护照证件号码", true, hasWarn0 ? "warn" : "pass", items, meta, hasWarn0 ? "结构合规（国籍代码未收录）" : "符合通用护照编号规则");
+  }
+  if(cnOk){
+    items.push(it("中国护照规则", true, "pass", cnDetail));
+    return mkResult("passport","护照证件号码", true, "pass", items, meta, "符合中国护照编码规则");
+  }
+  items.push(it("编号形态", false, "fail", "既不符合「3 位国籍代码 + 序号（≤12 位）」，也不匹配任何中国护照格式"));
+  return mkResult("passport","护照证件号码", false, "fail", items, meta, "校验未通过");
+}
+
+function validateHKM(raw){
+  var items = [], s = String(raw).trim().toUpperCase(), meta = {};
+  var lenOk = s.length === 9 || s.length === 11;
+  items.push(it("长度", lenOk, lenOk ? "pass" : "fail", s.length + " 位（必须为 9 位或 11 位）"));
+  var p = s.charAt(0);
+  var pOk = p === "H" || p === "M";
+  items.push(it("第 1 位前缀", pOk, pOk ? "pass" : "fail", pOk ? p + "（" + (p === "H" ? "香港签发" : "澳门签发") + "）" : "必须为字母 H 或 M"));
+  meta.place = pOk ? (p === "H" ? "香港签发" : "澳门签发") : "未知";
+  var tail = s.slice(1);
+  var tOk = /^\d+$/.test(tail);
+  var tLenOk = tail.length === 8 || tail.length === 10;
+  if(lenOk && pOk){
+    items.push(it("第 2 位起", /^\d+$/.test(tail) && tLenOk, (tOk && tLenOk) ? "pass" : "fail",
+      tOk ? (tail.length + " 位数字（" + (tail.length === 8 ? "9 位式" : "11 位式") + "）") : "必须为纯数字"));
+  }
+  meta.kind = s.length === 9 ? "9 位：H/M + 8 位数字" : "11 位：H/M + 10 位数字";
+  var ok = pOk && lenOk && tOk && tLenOk;
+  return mkResult("hkm","港澳居民来往内地通行证", ok, ok ? "pass" : "fail", items, meta, ok ? "符合编码规则" : "校验未通过");
+}
+
+function validateTWN(raw){
+  var items = [], s = String(raw).trim().toUpperCase(), meta = {};
+  var len = s.length;
+  var lenOk = len === 8 || (len >= 10 && len <= 14);
+  items.push(it("长度", lenOk, lenOk ? "pass" : "fail", len + " 位（必须为 8 位或 10-14 位）"));
+  var ok = lenOk, level = "pass", summary = "符合编码规则";
+
+  if(len === 8){
+    var a = /^\d{8}$/.test(s);
+    items.push(it("8 位证件形态", a, a ? "pass" : "fail", a ? "8 位纯数字（终身号）" : "8 位证件必须为 8 位数字"));
+    meta.kind = "8 位纯数字（终身号）";
+    ok = ok && a;
+  } else if(len >= 10){
+    var head = s.slice(0,10);
+    var headOk = /^\d{10}$/.test(head);
+    items.push(it("前 10 位", headOk, headOk ? "pass" : "fail", headOk ? "10 位数字" : "前 10 位必须为数字"));
+    var suf = s.slice(10);
+    var sufOk = true, sufDetail = "", sufLevel = "pass";
+    if(suf.length === 0){ sufDetail = "无后缀（10 位纯数字，前 8 位为终身号，后 2 位为签发次数）"; meta.kind = "10 位纯数字"; }
+    else if(suf.length === 1 || suf.length === 2){
+      sufOk = /^\d+$/.test(suf);
+      sufDetail = sufOk ? (suf + " → 按签发次数位宽松判定（规则未明确 11/12 位后缀形态）") : "11/12 位后缀应为数字";
+      sufLevel = sufOk ? "warn" : "fail";
+      if(sufOk) level = "warn";
+      meta.kind = len + " 位（前 10 位数字 + " + suf.length + " 位数字）";
+    }
+    else if(suf.length === 3){
+      sufOk = /^\([A-Z]\)$/.test(suf);
+      sufDetail = sufOk ? suf + " → 符合 「( + 字母 + )」形式" : "应为 (字母) 形式，如 (A)";
+      meta.kind = "13 位：10 位数字 + (字母)";
+    }
+    else if(suf.length === 4){
+      sufOk = /^\(\d{2}\)$/.test(suf);
+      sufDetail = sufOk ? suf + " → 符合 「( + 两位数字 + )」形式" : "应为 (两位数字) 形式，如 (12)";
+      meta.kind = "14 位：10 位数字 + (两位数字)";
+    }
+    items.push(it("第 11 位起后缀", sufOk, sufOk ? sufLevel : "fail", sufDetail));
+    ok = ok && headOk && sufOk;
+    if(ok && sufLevel === "warn"){ level = "warn"; summary = "结构合规（11/12 位后缀形态规则未明确，按数字宽松判定）"; }
+  }
+  return mkResult("twn","台湾居民来往大陆通行证", ok, ok ? level : "fail", items, meta, ok ? summary : "校验未通过");
+}
+
+function validateUSCI(raw){
+  var items = [], s = String(raw).trim().toUpperCase(), meta = {};
+  var lenOk = s.length === 18;
+  items.push(it("长度", lenOk, lenOk ? "pass" : "fail", s.length + " 位（必须为 18 位）"));
+
+  var bad = [];
+  for(var i = 0; i < s.length; i++){
+    if(USCI_ALPHA.indexOf(s.charAt(i)) < 0) bad.push(s.charAt(i) + "(第" + (i+1) + "位)");
+  }
+  var csOk = lenOk && bad.length === 0;
+  items.push(it("字符集", csOk, csOk ? "pass" : "fail",
+    csOk ? "全部属于 31 字符集（数字 + 大写字母，不含 I、O、Z、S、V）" : ("含有非法字符：" + bad.join("、"))));
+
+  if(!lenOk || !csOk){
+    return mkResult("usci","统一社会信用代码", false, "fail", items, meta, "结构不符合 GB 32100-2015");
+  }
+
+  var d1 = s.charAt(0), d2 = s.charAt(1);
+  var dept = USCI_DEPT[d1];
+  var deptOk = !!dept;
+  items.push(it("第 1 位(登记管理部门)", deptOk, deptOk ? "pass" : "fail", deptOk ? (d1 + " " + dept.name) : (d1 + " 不是有效的登记管理部门代码")));
+  var catOk = deptOk && !!dept.cats[d2];
+  items.push(it("第 2 位(机构类别)", catOk, catOk ? "pass" : "fail",
+    catOk ? (d1 + d2 + " " + dept.cats[d2]) : (deptOk ? (d2 + " 与部门「" + dept.name + "」不构成有效组合（有效：" + Object.keys(dept.cats).join("/") + "）") : "无法判定")));
+  if(deptOk && catOk){ meta.deptName = dept.name; meta.catName = dept.cats[d2]; }
+
+  var region = s.slice(2,8);
+  var rDigits = /^\d{6}$/.test(region);
+  var rFull = !!REGION_MAP[region];
+  var rProv = !!PROV_MAP[region.slice(0,2)];
+  var rLevel = !rDigits ? "fail" : (rFull ? "pass" : (rProv ? "warn" : "warn"));
+  items.push(it("第 3-8 位(行政区划码)", rDigits, rLevel,
+    !rDigits ? "必须为 6 位数字"
+             : (rFull ? (region + " " + REGION_MAP[region])
+                      : (region + " 为 6 位数字，但未收录于内置区划表（" + (rProv ? "省级前缀 " + PROV_MAP[region.slice(0,2)] + " 有效" : "省级前缀亦未收录") + "）"))));
+  meta.regionName = REGION_MAP[region] || PROV_MAP[region.slice(0,2)] || "未知区划";
+
+  var subj = s.slice(8,17), orgLvl = "pass", orgOk = true, orgDetail = "";
+  if(/^\d{8}[0-9X]$/.test(subj)){
+    var expOrg = orgCheckDigit(subj.slice(0,8));
+    var orgPass = expOrg === subj.charAt(8);
+    orgOk = orgPass;
+    orgLvl = orgPass ? "pass" : "fail";
+    orgDetail = "8 位数字本体码 + GB 11714 校验位「" + expOrg + "」" + (orgPass ? "，校验一致" : "，与实际「" + subj.charAt(8) + "」不一致");
+  } else {
+    orgLvl = "warn"; orgOk = true;
+    orgDetail = "主体标识码含数字/字母混合（" + subj + "），无法按 GB 11714 纯数字规则校验，跳过该段校验";
+  }
+  items.push(it("第 9-17 位(主体标识码)", orgOk, orgLvl, orgDetail));
+  meta.subject = subj;
+
+  var expC = usciCheckDigit(s.slice(0,17));
+  var ckOk = expC === s.charAt(17);
+  items.push(it("第 18 位(校验码 GB 32100)", ckOk, ckOk ? "pass" : "fail", "应为 " + expC + "，实际 " + s.charAt(17)));
+
+  var hardOk = deptOk && catOk && rDigits && ckOk && orgOk;
+  var hasWarn = items.some(function(x){ return x.level === "warn"; });
+  return mkResult("usci","统一社会信用代码", hardOk, hardOk ? (hasWarn ? "warn" : "pass") : "fail", items, meta,
+    hardOk ? (hasWarn ? "结构合规（部分区段为提示级）" : "完全合规") : "校验未通过");
+}
+
+const VALIDATORS = {
+  idcard: validateIdCard,
+  passport: validatePassport,
+  hkm: validateHKM,
+  twn: validateTWN,
+  usci: validateUSCI
+};
+const TYPE_NAMES = {
+  idcard:"公民身份证号码", passport:"护照证件号码", hkm:"港澳居民来往内地通行证",
+  twn:"台湾居民来往大陆通行证", usci:"统一社会信用代码"
+};
+const TYPE_ORDER = ["idcard","passport","hkm","twn","usci"];
+
+function validateAs(type, raw){ return VALIDATORS[type](raw); }
+
+/* 全类型并行匹配，返回所有通过的结果 */
+function matchAll(raw){
+  var s = String(raw).trim();
+  if(!s) return [];
+  var out = [];
+  TYPE_ORDER.forEach(function(t){
+    var r = VALIDATORS[t](s);
+    if(r.ok) out.push(r);
+  });
+  if(!out.length){
+    out.push(VALIDATORS.idcard(s));
+  }
+  return out;
+}
+// ==LOGIC_END==
+
+/* =================================================================
+   UI 层
+   ================================================================= */
+const LS_KEY = "idgen.records.v1";
+let PERSON = [], ORG = [], STORE = [];
+let CFG = { ptype:"idcard", sex:"random", pspMode:"intl", pspTail:"num", hkmPrefix:"random", hkmLen:"random" };
+
+/* ---------- toast ---------- */
+function toast(msg, kind){
+  const box = document.getElementById("toast");
+  const d = document.createElement("div");
+  d.className = "tmsg" + (kind ? " " + kind : "");
+  d.textContent = msg;
+  box.appendChild(d);
+  setTimeout(() => d.remove(), 2200);
+}
+
+/* ---------- tabs ---------- */
+document.querySelectorAll(".tab").forEach(t => {
+  t.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(x => x.classList.remove("on"));
+    document.querySelectorAll(".panel").forEach(x => x.classList.remove("on"));
+    t.classList.add("on");
+    document.getElementById("p-" + t.dataset.p).classList.add("on");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+});
+
+/* ---------- 初始化下拉 ---------- */
+function fillRegionSelect(sel, includeAll, list){
+  const src = list || REGIONS;
+  const groups = {}, seen = {};
+  src.forEach(r => {
+    if(seen[r.code]) return;
+    seen[r.code] = 1;
+    const p = r.code.slice(0,2);
+    const pn = PROV_MAP[p] || "其他";
+    (groups[pn] = groups[pn] || []).push(r);
+  });
+  let html = "";
+  if(includeAll) html += '<option value="">随机（每次随机抽取一个区划）</option>';
+  Object.keys(groups).forEach(pn => {
+    html += '<optgroup label="' + pn + '">';
+    groups[pn].forEach(r => { html += '<option value="' + r.code + '">' + r.code + " " + r.name + "</option>"; });
+    html += "</optgroup>";
+  });
+  sel.innerHTML = html;
+}
+fillRegionSelect(document.getElementById("idc-region"), true, DISTRICTS);
+fillRegionSelect(document.getElementById("u-region"), true, CITIES.concat(DISTRICTS));
+document.getElementById("st-f").innerHTML = '<option value="">全部类型</option>' +
+  TYPE_ORDER.map(t => '<option value="' + t + '">' + TYPE_NAMES[t] + "</option>").join("");
+
+document.getElementById("psp-country").innerHTML =
+  COUNTRIES.map(c => '<option value="' + c[0] + '">' + c[0] + "　" + c[1] + "</option>").join("");
+document.getElementById("psp-country").value = "CHN";
+
+document.getElementById("u-dept").innerHTML =
+  USCI_DEPT_KEYS.map(k => '<option value="' + k + '">' + k + "　" + USCI_DEPT[k].name + "</option>").join("");
+document.getElementById("u-dept").value = "9";
+function refreshCats(){
+  const d = document.getElementById("u-dept").value;
+  const cats = USCI_DEPT[d].cats;
+  document.getElementById("u-cat").innerHTML =
+    Object.keys(cats).map(k => '<option value="' + k + '">' + d + k + "　" + cats[k] + "</option>").join("");
+}
+refreshCats();
+document.getElementById("u-dept").addEventListener("change", refreshCats);
+
+document.getElementById("v-type").innerHTML =
+  '<option value="auto">自动识别 / 全类型匹配</option>' +
+  TYPE_ORDER.map(t => '<option value="' + t + '">' + TYPE_NAMES[t] + "</option>").join("");
+
+/* ---------- 证件类型切换 ---------- */
+document.querySelectorAll("#ptypes .type").forEach(el => {
+  el.addEventListener("click", () => {
+    document.querySelectorAll("#ptypes .type").forEach(x => x.classList.remove("on"));
+    el.classList.add("on");
+    CFG.ptype = el.dataset.t;
+    ["idcard","passport","hkm","twn"].forEach(t => {
+      document.getElementById("cfg-" + t).style.display = (t === CFG.ptype) ? "" : "none";
+    });
+    document.getElementById("cfgname").textContent = TYPE_NAMES[CFG.ptype];
+    const colors = { idcard:"var(--idc)", passport:"var(--psp)", hkm:"var(--hkm)", twn:"var(--tw)" };
+    document.getElementById("cfgbar").style.background = colors[CFG.ptype];
+  });
+});
+
+/* ---------- 分段控件 ---------- */
+function segGroup(id, cb){
+  const box = document.getElementById(id);
+  if(!box) return;
+  box.querySelectorAll("button").forEach(b => {
+    b.addEventListener("click", () => {
+      box.querySelectorAll("button").forEach(x => x.classList.remove("on"));
+      b.classList.add("on");
+      cb(b.dataset.v);
+    });
+  });
+}
+segGroup("idc-sex", v => CFG.sex = v);
+segGroup("psp-tailset", v => CFG.pspTail = v);
+segGroup("hkm-prefix", v => CFG.hkmPrefix = v);
+segGroup("hkm-len", v => CFG.hkmLen = v);
+document.getElementById("psp-mode").addEventListener("change", e => {
+  CFG.pspMode = e.target.value;
+  document.getElementById("psp-intl").style.display = CFG.pspMode === "intl" ? "" : "none";
+  document.getElementById("psp-cn").style.display = CFG.pspMode === "cn" ? "" : "none";
+});
+
+/* ---------- 生成 ---------- */
+function genOne(type){
+  if(type === "idcard"){
+    return genIdCard({
+      region: document.getElementById("idc-region").value,
+      sex: CFG.sex,
+      d1: document.getElementById("idc-d1").value,
+      d2: document.getElementById("idc-d2").value
+    });
+  }
+  if(type === "passport"){
+    return genPassport({
+      mode: CFG.pspMode,
+      kind: document.getElementById("psp-kind").value,
+      country: document.getElementById("psp-country").value,
+      length: document.getElementById("psp-len").value,
+      tailSet: CFG.pspTail
+    });
+  }
+  if(type === "hkm"){
+    return genHKMPermit({
+      prefix: CFG.hkmPrefix,
+      length: CFG.hkmLen === "random" ? 0 : parseInt(CFG.hkmLen, 10)
+    });
+  }
+  if(type === "twn") return genTwnPermit({ format: document.getElementById("twn-fmt").value });
+  return genUSCI({
+    dept: document.getElementById("u-dept").value,
+    cat: document.getElementById("u-cat").value,
+    region: document.getElementById("u-region").value,
+    subject: document.getElementById("u-subj").value
+  });
+}
+
+function describe(type, meta){
+  if(type === "idcard") return '<span class="tag ' + (meta.sex === "M" ? "m" : "f") + '">' + meta.sexText + "</span><span class=\"tag\">" + meta.birthday + '</span><span class="tag k">' + meta.regionName + "</span>";
+  if(type === "passport") return '<span class="tag k">' + (meta.kind || "") + "</span>" + (meta.countryName ? '<span class="tag">' + meta.country + " " + meta.countryName + "</span>" : "");
+  if(type === "hkm") return '<span class="tag k">' + meta.kind + "</span><span class=\"tag\">" + meta.place + "</span>";
+  if(type === "twn") return '<span class="tag k">' + meta.kind + "</span>";
+  return '<span class="tag k">' + meta.deptName + "</span><span class=\"tag\">" + meta.catName + "</span><span class=\"tag\">" + meta.regionName + "</span>";
+}
+function describePlain(type, meta){
+  if(type === "idcard") return meta.sexText + " / " + meta.birthday + " / " + meta.regionName;
+  if(type === "passport") return (meta.kind || "") + (meta.countryName ? " / " + meta.country + " " + meta.countryName : "");
+  if(type === "hkm") return meta.kind + " / " + meta.place;
+  if(type === "twn") return meta.kind;
+  return meta.deptName + " / " + meta.catName + " / " + meta.regionName;
+}
+
+function runGenerate(){
+  const type = CFG.ptype;
+  const n = Math.max(1, Math.min(500, parseInt(document.getElementById("p-count").value, 10) || 10));
+  const list = [];
+  for(let i = 0; i < n; i++){
+    const g = genOne(type);
+    g.type = type;
+    g.check = validateAs(type, g.number);
+    list.push(g);
+  }
+  PERSON = list;
+  renderPerson();
+  const okN = list.filter(x => x.check.ok).length;
+  const allOk = okN === list.length;
+  toast("已生成 " + n + " 条，" + (allOk ? "全部通过自校验" : (list.length - okN) + " 条未通过") + "（通过 " + okN + "/" + list.length + "）", allOk ? "good" : "bad");
+  updateStats();
+}
+document.getElementById("p-gen").addEventListener("click", runGenerate);
+
+function renderPerson(){
+  const tb = document.getElementById("p-body");
+  if(!PERSON.length){
+    tb.innerHTML = '<tr><td colspan="5"><div class="empty"><span class="big">⌘</span>暂无结果</div></td></tr>';
+    document.getElementById("p-stat").textContent = "—";
+    return;
+  }
+  const okN = PERSON.filter(x => x.check.ok).length;
+  document.getElementById("p-stat").textContent = "共 " + PERSON.length + " 条 · 通过 " + okN + " 条";
+  tb.innerHTML = PERSON.map((g, i) => {
+    const lv = g.check.level;
+    const badge = lv === "pass" ? '<span class="badge pass">✓ 合规</span>'
+      : lv === "warn" ? '<span class="badge warn">! 提示</span>'
+      : '<span class="badge fail">✕ 未通过</span>';
+    return '<tr><td class="num">' + (i+1) + "</td>" +
+      '<td><span class="numchip ' + g.type + '">' + g.number + "</span></td>" +
+      "<td>" + describe(g.type, g.check.meta) + "</td>" +
+      "<td>" + badge + "</td>" +
+      '<td><div class="acts"><button class="icobtn" data-copy="' + g.number + '">复制</button>' +
+      '<button class="icobtn" data-save-p="' + i + '">存台账</button>' +
+      '<button class="icobtn del" data-delp="' + i + '">删除</button></div></td></tr>';
+  }).join("");
+}
+document.getElementById("p-body").addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if(!b) return;
+  if(b.dataset.copy){ copyText(b.dataset.copy); toast("已复制 " + b.dataset.copy); }
+  else if(b.dataset.saveP !== undefined){ saveRec(PERSON[+b.dataset.saveP]); }
+  else if(b.dataset.delp !== undefined){ PERSON.splice(+b.dataset.delp, 1); renderPerson(); updateStats(); }
+});
+
+/* ---------- 单位证件 ---------- */
+function runGenerateOrg(){
+  const n = Math.max(1, Math.min(500, parseInt(document.getElementById("u-count").value, 10) || 10));
+  const dept = document.getElementById("u-dept").value;
+  const cat = document.getElementById("u-cat").value;
+  const region = document.getElementById("u-region").value;
+  const subj = document.getElementById("u-subj").value;
+  const list = [];
+  for(let i = 0; i < n; i++){
+    const g = genUSCI({ dept: dept, cat: cat, region: region, subject: subj });
+    g.type = "usci";
+    g.check = validateUSCI(g.number);
+    list.push(g);
+  }
+  ORG = list;
+  renderOrg();
+  const okN = list.filter(x => x.check.ok).length;
+  toast("已生成 " + n + " 条统一社会信用代码，" + (okN === n ? "全部通过自校验" : (n - okN) + " 条未通过"), okN === n ? "good" : "bad");
+  updateStats();
+}
+document.getElementById("u-gen").addEventListener("click", runGenerateOrg);
+
+function renderOrg(){
+  const tb = document.getElementById("u-body");
+  if(!ORG.length){
+    tb.innerHTML = '<tr><td colspan="5"><div class="empty"><span class="big">⌘</span>暂无结果</div></td></tr>';
+    document.getElementById("u-stat").textContent = "—";
+    return;
+  }
+  const okN = ORG.filter(x => x.check.ok).length;
+  document.getElementById("u-stat").textContent = "共 " + ORG.length + " 条 · 通过 " + okN + " 条";
+  tb.innerHTML = ORG.map((g, i) => {
+    const lv = g.check.level;
+    const badge = lv === "pass" ? '<span class="badge pass">✓ 合规</span>'
+      : lv === "warn" ? '<span class="badge warn">! 提示</span>' : '<span class="badge fail">✕ 未通过</span>';
+    return '<tr><td class="num">' + (i+1) + "</td>" +
+      '<td><span class="numchip usci">' + g.number + "</span></td>" +
+      "<td>" + describe("usci", g.check.meta) + "</td>" +
+      "<td>" + badge + "</td>" +
+      '<td><div class="acts"><button class="icobtn" data-copy="' + g.number + '">复制</button>' +
+      '<button class="icobtn" data-save-u="' + i + '">存台账</button>' +
+      '<button class="icobtn del" data-delu="' + i + '">删除</button></div></td></tr>';
+  }).join("");
+}
+document.getElementById("u-body").addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if(!b) return;
+  if(b.dataset.copy){ copyText(b.dataset.copy); toast("已复制 " + b.dataset.copy); }
+  else if(b.dataset.saveU !== undefined){ saveRec(ORG[+b.dataset.saveU]); }
+  else if(b.dataset.delu !== undefined){ ORG.splice(+b.dataset.delu, 1); renderOrg(); updateStats(); }
+});
+
+/* ---------- 剪贴板 ---------- */
+function copyText(t){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).catch(() => fallbackCopy(t));
+  } else fallbackCopy(t);
+}
+function fallbackCopy(t){
+  const ta = document.createElement("textarea");
+  ta.value = t; ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand("copy"); }catch(e){}
+  ta.remove();
+}
+function copyAll(list){
+  if(!list.length) return toast("暂无可复制内容", "bad");
+  copyText(list.map(x => x.number).join("\n"));
+  toast("已复制 " + list.length + " 个号码");
+}
+document.getElementById("p-copyall").addEventListener("click", () => copyAll(PERSON));
+document.getElementById("u-copyall").addEventListener("click", () => copyAll(ORG));
+
+/* ---------- CSV 导出 ---------- */
+function toCSV(rows){
+  const head = ["证件号码","证件类型","关联信息","校验状态"];
+  const body = rows.map(g => [g.number, TYPE_NAMES[g.type], describePlain(g.type, g.check.meta), g.check.level]);
+  return "\ufeff" + [head].concat(body).map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(",")).join("\r\n");
+}
+function download(name, text, mime){
+  const blob = new Blob([text], { type: mime || "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+}
+document.getElementById("p-export").addEventListener("click", () => {
+  if(!PERSON.length) return toast("暂无结果可导出", "bad");
+  download("个人证件测试数据_" + stamp() + ".csv", toCSV(PERSON), "text/csv;charset=utf-8");
+  toast("CSV 已导出");
+});
+document.getElementById("u-export").addEventListener("click", () => {
+  if(!ORG.length) return toast("暂无结果可导出", "bad");
+  download("统一社会信用代码_" + stamp() + ".csv", toCSV(ORG), "text/csv;charset=utf-8");
+  toast("CSV 已导出");
+});
+document.getElementById("p-clear").addEventListener("click", () => { PERSON = []; renderPerson(); toast("已清空结果"); });
+document.getElementById("u-clear").addEventListener("click", () => { ORG = []; renderOrg(); toast("已清空结果"); });
+
+function stamp(){
+  const d = new Date();
+  return d.getFullYear() + pad(d.getMonth()+1,2) + pad(d.getDate(),2) + "_" + pad(d.getHours(),2) + pad(d.getMinutes(),2) + pad(d.getSeconds(),2);
+}
+
+/* ---------- 台账存储 ---------- */
+function loadStore(){
+  try{ STORE = JSON.parse(localStorage.getItem(LS_KEY) || "[]"); }catch(e){ STORE = []; }
+  if(!Array.isArray(STORE)) STORE = [];
+}
+function persist(){ localStorage.setItem(LS_KEY, JSON.stringify(STORE)); }
+function saveRec(rec){
+  if(!rec) return;
+  const exists = STORE.some(x => x.number === rec.number);
+  if(exists) return toast("该号码已在台账中：" + rec.number, "bad");
+  STORE.unshift({
+    number: rec.number, type: rec.type, typeName: TYPE_NAMES[rec.type],
+    desc: describePlain(rec.type, rec.check.meta), level: rec.check.level,
+    at: new Date().toISOString()
+  });
+  persist(); renderStore(); updateStats();
+  toast("已存入台账：" + rec.number, "good");
+}
+document.getElementById("p-saveall").addEventListener("click", () => {
+  if(!PERSON.length) return toast("暂无结果", "bad");
+  let c = 0;
+  PERSON.forEach(g => {
+    if(!STORE.some(x => x.number === g.number)){
+      STORE.unshift({ number:g.number, type:g.type, typeName:TYPE_NAMES[g.type], desc:describePlain(g.type, g.check.meta), level:g.check.level, at:new Date().toISOString() });
+      c++;
+    }
+  });
+  persist(); renderStore(); updateStats();
+  toast("已存入 " + c + " 条（重复项自动跳过）", c ? "good" : "bad");
+});
+document.getElementById("u-saveall").addEventListener("click", () => {
+  if(!ORG.length) return toast("暂无结果", "bad");
+  let c = 0;
+  ORG.forEach(g => {
+    if(!STORE.some(x => x.number === g.number)){
+      STORE.unshift({ number:g.number, type:"usci", typeName:TYPE_NAMES.usci, desc:describePlain("usci", g.check.meta), level:g.check.level, at:new Date().toISOString() });
+      c++;
+    }
+  });
+  persist(); renderStore(); updateStats();
+  toast("已存入 " + c + " 条（重复项自动跳过）", c ? "good" : "bad");
+});
+
+function filteredStore(){
+  const q = document.getElementById("st-q").value.trim().toLowerCase();
+  const f = document.getElementById("st-f").value;
+  const s = document.getElementById("st-s").value;
+  return STORE.filter(x =>
+    (!q || (x.number + " " + x.typeName + " " + x.desc).toLowerCase().indexOf(q) >= 0) &&
+    (!f || x.type === f) && (!s || x.level === s)
+  );
+}
+function renderStore(){
+  const list = filteredStore();
+  const tb = document.getElementById("st-body");
+  document.getElementById("cnt-store").textContent = STORE.length;
+  document.getElementById("s-store").textContent = STORE.length;
+  if(!list.length){
+    tb.innerHTML = '<tr><td colspan="7"><div class="empty"><span class="big">▤</span>' + (STORE.length ? "没有匹配的记录" : "台账为空，生成结果后点击\u201c存入台账\u201d") + "</div></td></tr>";
+    return;
+  }
+  tb.innerHTML = list.map((x, i) => {
+    const badge = x.level === "pass" ? '<span class="badge pass">通过</span>' : x.level === "warn" ? '<span class="badge warn">提示</span>' : '<span class="badge fail">未通过</span>';
+    const t = new Date(x.at);
+    const ts = t.getFullYear() + "-" + pad(t.getMonth()+1,2) + "-" + pad(t.getDate(),2) + " " + pad(t.getHours(),2) + ":" + pad(t.getMinutes(),2);
+    return '<tr><td class="num">' + (i+1) + "</td>" +
+      '<td><span class="numchip ' + x.type + '">' + x.number + "</span></td>" +
+      '<td><span class="tag">' + x.typeName + "</span></td>" +
+      "<td>" + x.desc + "</td>" +
+      '<td style="color:var(--muted);font-size:11.5px">' + ts + "</td>" +
+      "<td>" + badge + "</td>" +
+      '<td><div class="acts"><button class="icobtn" data-copy="' + x.number + '">复制</button>' +
+      '<button class="icobtn del" data-delst="' + x.number + '">删除</button></div></td></tr>';
+  }).join("");
+}
+document.getElementById("st-body").addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if(!b) return;
+  if(b.dataset.copy){ copyText(b.dataset.copy); toast("已复制 " + b.dataset.copy); }
+  else if(b.dataset.delst){ STORE = STORE.filter(x => x.number !== b.dataset.delst); persist(); renderStore(); updateStats(); toast("已删除"); }
+});
+["st-q","st-f","st-s"].forEach(id => document.getElementById(id).addEventListener("input", renderStore));
+document.getElementById("st-copy").addEventListener("click", () => {
+  const l = filteredStore();
+  if(!l.length) return toast("暂无可复制内容", "bad");
+  copyText(l.map(x => x.number).join("\n")); toast("已复制 " + l.length + " 个号码");
+});
+document.getElementById("st-json").addEventListener("click", () => {
+  if(!STORE.length) return toast("台账为空", "bad");
+  download("身份标识台账_" + stamp() + ".json", JSON.stringify(STORE, null, 2), "application/json");
+  toast("JSON 已导出");
+});
+document.getElementById("st-csv").addEventListener("click", () => {
+  const l = filteredStore();
+  if(!l.length) return toast("台账为空", "bad");
+  const head = ["证件号码","证件类型","说明","入库时间","状态"];
+  const body = l.map(x => [x.number, x.typeName, x.desc, x.at, x.level]);
+  download("身份标识台账_" + stamp() + ".csv",
+    "\ufeff" + [head].concat(body).map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(",")).join("\r\n"),
+    "text/csv;charset=utf-8");
+  toast("CSV 已导出");
+});
+document.getElementById("st-clear").addEventListener("click", () => {
+  if(!STORE.length) return toast("台账已为空", "bad");
+  if(!confirm("确认清空全部 " + STORE.length + " 条台账记录？此操作不可撤销。")) return;
+  STORE = []; persist(); renderStore(); updateStats(); toast("台账已清空");
+});
+
+/* ---------- 校验页 ---------- */
+function runVerify(){
+  const raw = document.getElementById("v-input").value.split(/[\n,;，；\s]+/).map(x => x.trim()).filter(Boolean);
+  const out = document.getElementById("v-out");
+  if(!raw.length){ out.innerHTML = '<div class="empty"><span class="big">✓</span>请输入至少一个号码</div>'; document.getElementById("v-stat").textContent = "—"; return; }
+  const forced0 = document.getElementById("v-type").value;
+  const forced = VALIDATORS[forced0] ? forced0 : "auto";
+  let pass = 0, warn = 0, fail = 0;
+  const html = raw.map((s, i) => {
+    const res = forced === "auto" ? matchAll(s) : [VALIDATORS[forced](s)];
+    const best = res[0];
+    const okCount = res.filter(r => r.ok).length;
+    const kind = best.level === "pass" ? "pass" : best.level === "warn" ? "warn" : "fail";
+    if(best.level === "pass") pass++; else if(best.level === "warn") warn++; else fail++;
+    const matchedTypes = forced === "auto"
+      ? (okCount ? '<span class="vt">匹配 ' + okCount + ' 类规则：</span>' + res.filter(r => r.ok).map(r => '<span class="tag">' + r.typeName + "</span>").join("")
+                 : '<span class="vt">未匹配任何证件类型，以下按最接近的规则给出诊断：</span>')
+      : '<span class="vt">指定类型：' + TYPE_NAMES[forced] + "</span>";
+    const items = best.items.map(it2 => {
+      const mark = it2.level === "warn" ? "!" : (it2.ok ? "✓" : "✕");
+      const c = it2.level === "warn" ? "wr" : (it2.ok ? "ok" : "no");
+      return '<div class="vitem ' + c + '"><span class="mk">' + mark + "</span><b>" + it2.label + "</b><span>" + it2.detail + "</span></div>";
+    }).join("");
+    const metaTags = Object.keys(best.meta)
+      .filter(k => best.meta[k] !== undefined && best.meta[k] !== "" && k !== "sex")
+      .map(k => '<span class="tag">' + k + "：" + best.meta[k] + "</span>").join("");
+    const others = res.filter(r => r.ok).slice(1);
+    const altBlock = (forced === "auto" && others.length)
+      ? '<div style="padding:0 14px 12px"><span class="vt">其他同样匹配的类型：</span>' +
+        others.map(r => '<span class="tag">' + r.typeName + "</span>").join("") + "</div>"
+      : "";
+    return '<div class="vres ' + kind + '">' +
+      '<div class="vhead"><span class="numchip ' + best.type + '">' + s + "</span>" +
+      '<span class="badge ' + kind + '">' + (kind === "pass" ? "通过" : kind === "warn" ? "通过（提示）" : "未通过") + "</span>" +
+      '<span class="vt">判定为 ' + best.typeName + "</span>" + matchedTypes +
+      '<span style="margin-left:auto" class="vt">' + best.summary + "</span></div>" +
+      '<div class="vbody">' + items + "</div>" +
+      '<div class="vmeta">' + metaTags + "</div>" + altBlock + "</div>";
+  }).join("");
+  out.innerHTML = html;
+  document.getElementById("v-stat").textContent = "共 " + raw.length + " 条 · 通过 " + pass + " · 提示 " + warn + " · 未通过 " + fail;
+}
+document.getElementById("v-run").addEventListener("click", runVerify);
+document.getElementById("v-clear").addEventListener("click", () => {
+  document.getElementById("v-input").value = "";
+  document.getElementById("v-out").innerHTML = '<div class="empty"><span class="big">✓</span>粘贴号码后点击"开始校验"</div>';
+  document.getElementById("v-stat").textContent = "—";
+});
+document.getElementById("v-save").addEventListener("click", () => {
+  const raw = document.getElementById("v-input").value.split(/[\n,;，；\s]+/).map(x => x.trim()).filter(Boolean);
+  if(!raw.length) return toast("请输入号码", "bad");
+  let c = 0;
+  raw.forEach(s => {
+    const r = matchAll(s)[0];
+    if(r && r.ok && !STORE.some(x => x.number === s)){
+      STORE.unshift({ number:s, type:r.type, typeName:r.typeName, desc:describePlain(r.type, r.meta), level:r.level, at:new Date().toISOString() });
+      c++;
+    }
+  });
+  persist(); renderStore(); updateStats();
+  toast("已存入 " + c + " 条通过项", c ? "good" : "bad");
+});
+document.getElementById("v-demo").addEventListener("click", () => {
+  const demo = genIdCard({ region:"110101", sex:"M", birth:{ y:1949, m:12, d:31 } });
+  const demo2 = genIdCard({ region:"440305", sex:"F", birth:{ y:1995, m:6, d:18 } });
+  const p1 = genPassport({ mode:"cn", kind:"E" });
+  const p2 = genPassport({ mode:"cn", kind:"EX" });
+  const p3 = genPassport({ mode:"intl", country:"USA", length:9, tailSet:"num" });
+  const h1 = genHKMPermit({ prefix:"H", length:9 });
+  const h2 = genHKMPermit({ prefix:"M", length:11 });
+  const t1 = genTwnPermit({ format:"8" });
+  const t2 = genTwnPermit({ format:"13" });
+  const u1 = genUSCI({ dept:"9", cat:"1", region:"350100", subject:"org" });
+  const u2 = genUSCI({ dept:"5", cat:"1", region:"110108", subject:"org" });
+  document.getElementById("v-input").value = [
+    demo.number, demo2.number, p1.number, p2.number, p3.number,
+    h1.number, h2.number, t1.number, t2.number, u1.number, u2.number,
+    "11010119491231002Y", "91350100M000100Y43", "H1234567", "1234567"
+  ].join("\n");
+  runVerify();
+  toast("已填入示例（含 4 条故意不合规数据）");
+});
+
+/* ---------- 自检 ---------- */
+function selfCheck(which){
+  const target = which === "u" ? document.getElementById("sc-out-u") : document.getElementById("sc-out");
+  const cases = which === "u"
+    ? USCI_DEPT_KEYS.map(k => ({ name: k + " " + USCI_DEPT[k].name + " · 严格主体标识码", type:"usci", run: () => genUSCI({ dept:k, cat:null, region:null, subject:"org" }) }))
+        .concat(USCI_DEPT_KEYS.map(k => ({ name: k + " " + USCI_DEPT[k].name + " · 扩展主体标识码", type:"usci", run: () => genUSCI({ dept:k, cat:null, region:null, subject:"loose" }) })))
+    : [
+        { name: "公民身份证 · 随机全部", type:"idcard", run: () => genIdCard({}) },
+        { name: "公民身份证 · 男性", type:"idcard", run: () => genIdCard({ sex:"M" }) },
+        { name: "公民身份证 · 女性", type:"idcard", run: () => genIdCard({ sex:"F" }) },
+        { name: "公民身份证 · 2099 年末出生", type:"idcard", run: () => genIdCard({ birth:{ y:2099, m:12, d:31 } }) },
+        { name: "公民身份证 · 1901 年初出生", type:"idcard", run: () => genIdCard({ birth:{ y:1901, m:1, d:1 } }) },
+        { name: "护照 · 通用模式(3 位国籍码)", type:"passport", run: () => genPassport({ mode:"intl", country:"CHN", length:9, tailSet:"num" }) },
+        { name: "护照 · 通用模式(字母数字后缀/12位)", type:"passport", run: () => genPassport({ mode:"intl", country:"SGP", length:12, tailSet:"alnum" }) },
+        { name: "护照 · 中国 E+8 位数字", type:"passport", run: () => genPassport({ mode:"cn", kind:"E" }) },
+        { name: "护照 · 中国 E+字母+7 位数字", type:"passport", run: () => genPassport({ mode:"cn", kind:"EX" }) },
+        { name: "护照 · 中国 PE+7 位数字", type:"passport", run: () => genPassport({ mode:"cn", kind:"PE" }) },
+        { name: "护照 · 中国 G+8 位数字", type:"passport", run: () => genPassport({ mode:"cn", kind:"G" }) },
+        { name: "港澳通行证 · 9 位 / 11 位随机", type:"hkm", run: () => genHKMPermit({}) },
+        { name: "港澳通行证 · 香港签发 9 位", type:"hkm", run: () => genHKMPermit({ prefix:"H", length:9 }) },
+        { name: "港澳通行证 · 澳门签发 11 位", type:"hkm", run: () => genHKMPermit({ prefix:"M", length:11 }) },
+        { name: "台湾通行证 · 8 位纯数字", type:"twn", run: () => genTwnPermit({ format:"8" }) },
+        { name: "台湾通行证 · 10 位纯数字", type:"twn", run: () => genTwnPermit({ format:"10" }) },
+        { name: "台湾通行证 · 13 位 (字母)", type:"twn", run: () => genTwnPermit({ format:"13" }) },
+        { name: "台湾通行证 · 14 位 (两位数字)", type:"twn", run: () => genTwnPermit({ format:"14" }) }
+      ];
+  const N = which === "u" ? 400 : 1000;
+  const rows = cases.map(c => {
+    let ok = 0; const bad = [];
+    for(let i = 0; i < N; i++){
+      const g = c.run();
+      const r = VALIDATORS[c.type](g.number);
+      if(r.ok) ok++; else if(bad.length < 2) bad.push(g.number + "（" + r.summary + "）");
+    }
+    return { name:c.name, ok:ok, total:N, bad:bad };
+  });
+  const allOk = rows.reduce((a, b) => a + b.ok, 0);
+  const allN = rows.reduce((a, b) => a + b.total, 0);
+  const pctAll = allN ? allOk / allN * 100 : 0;
+  target.innerHTML =
+    '<div class="scrow" style="background:#f2fbf6;border-color:#c9ecd9"><div><b>合计</b>　' + rows.length + ' 个用例 × ' + N + ' 次随机抽样 = ' + allN + ' 条</div>' +
+    '<div><span class="badge ' + (allOk === allN ? "pass" : "fail") + '">' + (allOk === allN ? "全部合规" : "存在异常") + "</span></div>" +
+    '<b style="color:' + (allOk === allN ? "var(--ok)" : "var(--err)") + '">' + pctAll.toFixed(2) + "%</b></div>" +
+    rows.map(r => {
+      const p = r.ok / r.total * 100;
+      return '<div class="scrow"><div>' + r.name + '<div class="scbar"><i style="width:' + p + '%"></i></div>' +
+        (r.bad.length ? '<div style="color:var(--err);font-size:11px;margin-top:4px">异常样例：' + r.bad.join("；") + "</div>" : "") +
+        "</div><div>" + r.ok + " / " + r.total + "</div><b style=\"color:" + (p === 100 ? "var(--ok)" : "var(--err)") + '">' + p.toFixed(1) + "%</b></div>";
+    }).join("");
+  SELFCHECK = { ok: allOk, n: allN };
+  updateStats();
+  toast("自检完成：" + allOk + " / " + allN + " 条合规", allOk === allN ? "good" : "bad");
+}
+document.getElementById("p-selfcheck").addEventListener("click", () => selfCheck("p"));
+document.getElementById("u-selfcheck").addEventListener("click", () => selfCheck("u"));
+
+/* ---------- 统计 ---------- */
+let SELFCHECK = { ok:0, n:0 };
+function updateStats(){
+  document.getElementById("s-gen").textContent = PERSON.length + ORG.length;
+  document.getElementById("s-store").textContent = STORE.length;
+  document.getElementById("cnt-store").textContent = STORE.length;
+  const list = PERSON.concat(ORG);
+  const failN = list.filter(x => !x.check.ok).length;
+  document.getElementById("s-fail").textContent = failN;
+  const el = document.getElementById("s-rate");
+  if(SELFCHECK.n) el.textContent = (SELFCHECK.ok / SELFCHECK.n * 100).toFixed(1) + "%";
+  else if(list.length) el.textContent = ((list.length - failN) / list.length * 100).toFixed(1) + "%";
+  else el.textContent = "—";
+}
+
+/* ---------- 启动 ---------- */
+loadStore();
+renderStore();
+updateStats();
+document.getElementById("v-input").value = [
+  "11010519491231002X",
+  "E12345678",
+  "H12345678",
+  "M1234567890",
+  "12345678",
+  "91350100M000100Y43"
+].join("\n");
+</script>
+</body>
+</html>
