@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>身份标识生成器 · 极简版 v1.4</title>
+<title>身份标识生成器 · 极简版 v1.5</title>
 <style>
 :root{
   --bg:#f4f6fc; --card:#fff; --line:#e3e8f2; --line2:#cdd8ee;
@@ -131,7 +131,7 @@ footer a{color:var(--idc);text-decoration:none}
 <div class="wrap">
 
   <header class="hero">
-    <h1>身份标识生成器 <span class="ver">v1.4 极简版</span></h1>
+    <h1>身份标识生成器 <span class="ver">v1.5 极简版</span></h1>
     <p>公民身份证 / <b>外国人永久居留身份证</b> / 护照 / 港澳通行证 / 台湾通行证 / 统一社会信用代码 —— 一键生成并实时校验。单文件、零依赖、可离线，历史记录存在浏览器本地。</p>
     <div class="statbar">
       <div class="stat"><b id="s1">0</b><span>本次生成</span></div>
@@ -866,23 +866,24 @@ document.getElementById("vt").innerHTML = '<option value="auto">自动识别</op
 /* 参数面板 */
 const CFG = {
   idcard: () =>
-    '<div class="row"><div class="fld"><label>归属地区</label><select id="c1"></select></div></div>' +
-    '<div class="row"><div class="fld"><label>性别</label><div class="seg" data-seg="sex">' +
+    '<div class="row">' +
+    '<div class="fld" style="max-width:185px;min-width:150px"><label>归属地区</label><select id="c1"></select></div>' +
+    '<div class="fld" style="max-width:150px;min-width:122px"><label>性别</label><div class="seg" data-seg="sex">' +
       '<button class="on" data-v="random">随机</button><button data-v="M">男</button><button data-v="F">女</button></div></div>' +
-    '<div class="fld"><label>出生起始</label><input type="date" id="c2" value="1980-01-01"></div>' +
-    '<div class="fld"><label>出生结束</label><input type="date" id="c3" value="2005-12-31"></div></div>',
+    '<div class="fld" style="max-width:145px;min-width:126px"><label>出生起始</label><input type="date" id="c2" value="1980-01-01"></div>' +
+    '<div class="fld" style="max-width:145px;min-width:126px"><label>出生结束</label><input type="date" id="c3" value="2005-12-31"></div></div>',
   passport: () =>
-    '<div class="row"><div class="fld"><label>编号规则</label><select id="c1">' +
+    '<div class="row"><div class="fld" style="max-width:205px;min-width:158px"><label>编号规则</label><select id="c1">' +
       '<option value="intl">通用：3 位国籍代码 + 序号</option><option value="cn">中国护照</option></select></div>' +
-    '<div class="fld"><label id="c2lab">国籍 / 地区</label><select id="c2"></select></div>' +
-    '<div class="fld" style="max-width:96px"><label>总长度</label><input type="number" id="c3" value="9" min="4" max="12"></div></div>',
+    '<div class="fld" style="max-width:195px;min-width:140px"><label id="c2lab">国籍 / 地区</label><select id="c2"></select></div>' +
+    '<div class="fld" style="max-width:88px;min-width:76px"><label>总长度</label><input type="number" id="c3" value="9" min="4" max="12"></div></div>',
   hkm: () =>
-    '<div class="row"><div class="fld"><label>签发地前缀</label><div class="seg" data-seg="hkmP">' +
+    '<div class="row"><div class="fld" style="max-width:215px;min-width:172px"><label>签发地前缀</label><div class="seg" data-seg="hkmP">' +
       '<button class="on" data-v="random">随机</button><button data-v="H">H 香港</button><button data-v="M">M 澳门</button></div></div>' +
-    '<div class="fld"><label>长度</label><div class="seg" data-seg="hkmL">' +
+    '<div class="fld" style="max-width:215px;min-width:172px"><label>长度</label><div class="seg" data-seg="hkmL">' +
       '<button class="on" data-v="random">随机</button><button data-v="9">9 位</button><button data-v="11">11 位</button></div></div></div>',
   twn: () =>
-    '<div class="row"><div class="fld"><label>号码格式</label><select id="c1">' +
+    '<div class="row"><div class="fld" style="max-width:245px;min-width:196px"><label>号码格式</label><select id="c1">' +
       '<option value="random">随机（8/10/13/14 位）</option><option value="8">8 位纯数字</option>' +
       '<option value="10">10 位纯数字</option><option value="13">13 位：10 位数字 + (字母)</option>' +
       '<option value="14">14 位：10 位数字 + (两位数字)</option></select></div></div>',
@@ -895,10 +896,11 @@ const CFG = {
     '<div class="fld" style="max-width:148px;min-width:126px"><label>出生起始</label><input type="date" id="c3" value="1950-01-01"></div>' +
     '<div class="fld" style="max-width:148px;min-width:126px"><label>出生结束</label><input type="date" id="c4" value="2005-12-31"></div></div>',
   usci: () =>
-    '<div class="row"><div class="fld"><label>登记管理部门</label><select id="c1"></select></div>' +
-    '<div class="fld"><label>机构类别</label><select id="c2"></select></div></div>' +
-    '<div class="row"><div class="fld"><label>行政区划码（3-8 位）</label><select id="c3"></select></div>' +
-    '<div class="fld"><label>主体标识码</label><select id="c4">' +
+    '<div class="row">' +
+    '<div class="fld" style="max-width:178px;min-width:148px"><label>登记管理部门</label><select id="c1"></select></div>' +
+    '<div class="fld" style="max-width:148px;min-width:118px"><label>机构类别</label><select id="c2"></select></div>' +
+    '<div class="fld" style="max-width:172px;min-width:144px"><label>行政区划码（3-8 位）</label><select id="c3"></select></div>' +
+    '<div class="fld" style="max-width:235px;min-width:195px"><label>主体标识码</label><select id="c4">' +
       '<option value="org">严格：8 位数字 + GB 11714 校验位</option>' +
       '<option value="loose">扩展：31 字符集随机</option></select></div></div>'
 };
