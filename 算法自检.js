@@ -15,9 +15,9 @@ if (s < 0 || e < 0) {   /* 极简版使用 LITE_ 前缀标记 */
 if (s < 0 || e < 0) { console.error("未找到逻辑代码标记"); process.exit(1); }
 const code = html.slice(s, e);
 
-const names = ["genIdCard","genPassport","genHKMPermit","genTwnPermit","genUSCI",
-  "validateIdCard","validatePassport","validateHKM","validateTWN","validateUSCI",
-  "matchAll","idCheckDigit","orgCheckDigit","usciCheckDigit","REGIONS","USCI_DEPT","COUNTRY_MAP"];
+const names = ["genIdCard","genPassport","genHKMPermit","genTwnPermit","genUSCI","genPrPermit",
+  "validateIdCard","validatePassport","validateHKM","validateTWN","validateUSCI","validatePrResident",
+  "matchAll","idCheckDigit","orgCheckDigit","usciCheckDigit","REGIONS","USCI_DEPT","COUNTRY_MAP","PR_COUNTRY_MAP","PR_PROVS"];
 const api = new Function(code + "\nreturn {" + names.join(",") + "};")();
 
 let pass = 0, fail = 0;
@@ -44,6 +44,19 @@ knownID.forEach(n => {
   r.items.forEach(i2 => { if (!i2.ok || i2.level !== "pass") console.log("        " + i2.level + " | " + i2.label + " | " + i2.detail); });
 });
 
+// 国家移民管理局《新版外国人永久居留身份证适配性改造要点》表 1 官方样例
+// 932682198501010017：1985-01-01 出生沙特男性，江苏（32）申领；911124198108030024：加拿大（124）女性，北京（11）申领
+["932682198501010017", "911124198108030024"].forEach(n => {
+  const r = api.validatePrResident(n);
+  t("永居证官方样例 " + n, r.ok && r.level === "pass", "level=" + r.level + " " + r.summary);
+  console.log("  " + n + "  → " + r.level + " / " + r.summary);
+  r.items.forEach(i2 => { if (!i2.ok || i2.level !== "pass") console.log("        " + i2.level + " | " + i2.label + " | " + i2.detail); });
+});
+// 旧版 15 位（3 位拉丁字母国籍 + 12 位数字）宽松判定
+const oldPR = api.validatePrResident("CAN110019810803");
+t("永居证旧版 15 位宽松判定", oldPR.ok && oldPR.level === "warn", "level=" + oldPR.level + " " + oldPR.summary);
+console.log("  CAN110019810803  → " + oldPR.level + " / " + oldPR.summary);
+
 console.log("\n=== 2. 已知错误样例必须判负 ===");
 [
   ["身份证 校验位错误", "idcard", "11010119491231002Y"],
@@ -67,9 +80,17 @@ console.log("\n=== 2. 已知错误样例必须判负 ===");
   ["统一代码 部门/类别组合无效 94", "usci", "94440300708461136T"],
   ["统一代码 第2位无效 99", "usci", "9944030070846113XT"],
   ["统一代码 组织机构码校验位错", "usci", "91310115077567433M"],
-  ["统一代码 含字母 S", "usci", "91S40300708461136T"]
+  ["统一代码 含字母 S", "usci", "91S40300708461136T"],
+  ["永居证 首位非 9", "pr", "832682198501010017"],
+  ["永居证 校验位错误", "pr", "932682198501010018"],
+  ["永居证 申领地代码无效 96", "pr", "996682198501010017"],
+  ["永居证 月份 13", "pr", "932682198513010017"],
+  ["永居证 2 月 30 日", "pr", "932682198502300017"],
+  ["永居证 长度 17", "pr", "93268219850101001"],
+  ["永居证 含字母", "pr", "9326821985010100X7"],
+  ["永居证 顺序码 000", "pr", "91112419810803000" + api.idCheckDigit("91112419810803000")]
 ].forEach(([name, type, num]) => {
-  const r = api["validate" + ({ idcard: "IdCard", passport: "Passport", hkm: "HKM", twn: "TWN", usci: "USCI" }[type])](num);
+  const r = api["validate" + ({ idcard: "IdCard", passport: "Passport", hkm: "HKM", twn: "TWN", usci: "USCI", pr: "PrResident" }[type])](num);
   t(name + " 应判负", !r.ok, "实际 ok=" + r.ok + " level=" + r.level);
   console.log("  " + (r.ok ? "!! 误判通过" : "OK 判负") + "  " + name + " [" + num + "] → " + r.summary);
 });
@@ -106,6 +127,13 @@ bulk("港澳通行证 M 11 位", () => api.genHKMPermit({ prefix: "M", length: 1
   bulk("台胞证 " + f + " 位", () => api.genTwnPermit({ format: f }), api.validateTWN);
 });
 bulk("台胞证 混合格式", () => api.genTwnPermit({}), api.validateTWN);
+bulk("永居证 全随机", () => api.genPrPermit({}), api.validatePrResident);
+bulk("永居证 男", () => api.genPrPermit({ sex: "M" }), api.validatePrResident);
+bulk("永居证 女", () => api.genPrPermit({ sex: "F" }), api.validatePrResident);
+bulk("永居证 无国籍 000", () => api.genPrPermit({ cc: "000" }), api.validatePrResident);
+bulk("永居证 1901-01-01 边界", () => api.genPrPermit({ birth: { y: 1901, m: 1, d: 1 } }), api.validatePrResident);
+bulk("永居证 2099-12-31 边界", () => api.genPrPermit({ birth: { y: 2099, m: 12, d: 31 } }), api.validatePrResident);
+bulk("永居证 2000 闰年 2/29", () => api.genPrPermit({ birth: { y: 2000, m: 2, d: 29 } }), api.validatePrResident);
 Object.keys(api.USCI_DEPT).forEach(k => {
   bulk("统一代码 部门 " + k, () => api.genUSCI({ dept: k, subject: "org" }), api.validateUSCI);
 });
@@ -125,6 +153,7 @@ const samples = [
   ["台胞10", api.genTwnPermit({ format: "10" }).number],
   ["台胞13", api.genTwnPermit({ format: "13" }).number],
   ["台胞14", api.genTwnPermit({ format: "14" }).number],
+  ["永居证", api.genPrPermit({ prov: "32", cc: "682", sex: "M", birth: { y: 1985, m: 1, d: 1 } }).number],
   ["统一码", api.genUSCI({ dept: "9", cat: "1", region: "350100", subject: "org" }).number]
 ];
 samples.forEach(([k, v]) => console.log("  " + k.padEnd(12) + v + L(v.length)));
@@ -145,6 +174,22 @@ for (let i = 0; i < 3000; i++) {
   if (!m.length || m[0].type !== "usci") { mism2++; if (mism2 < 3) console.log("  统一代码匹配异常:", g.number, m.map(x => x.type)); }
 }
 t("统一代码 matchAll 优先命中 usci", mism2 === 0, mism2 + " 例异常");
+
+let mism3 = 0;
+for (let i = 0; i < 3000; i++) {
+  const g = api.genPrPermit({});
+  const m = api.matchAll(g.number);
+  if (!m.length || m[0].type !== "pr") { mism3++; if (mism3 < 3) console.log("  永居证匹配异常:", g.number, m.map(x => x.type)); }
+}
+t("永居证 matchAll 优先命中 pr", mism3 === 0, mism3 + " 例异常");
+// 公民身份证号码不得被误判为永居证，反之亦然
+let cross = 0;
+for (let i = 0; i < 3000; i++) {
+  const a = api.genIdCard({}).number, b = api.genPrPermit({}).number;
+  if (api.validatePrResident(a).ok) cross++;
+  if (api.validateIdCard(b).ok) cross++;
+}
+t("身份证 ↔ 永居证 互不误判", cross === 0, cross + " 例交叉误判");
 
 console.log("\n=== 6. 校验位函数一致性 ===");
 let c1 = 0;
