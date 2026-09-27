@@ -21,6 +21,7 @@
   --hkm:#e11d48;
   --tw:#ea580c;
   --usci:#059669;
+  --pr:#b45309;
   --ok:#16a34a;
   --warn:#d97706;
   --err:#dc2626;
@@ -55,7 +56,7 @@ body{
 }
 .hero:before{
   content:"";position:absolute;left:0;top:0;bottom:0;width:6px;
-  background:linear-gradient(180deg,var(--idc),var(--psp) 32%,var(--hkm) 58%,var(--tw) 78%,var(--usci));
+  background:linear-gradient(180deg,var(--idc),var(--psp) 28%,var(--hkm) 50%,var(--tw) 66%,var(--pr) 82%,var(--usci));
 }
 .hero:after{
   content:"";position:absolute;right:-70px;top:-70px;width:260px;height:260px;border-radius:50%;
@@ -76,7 +77,7 @@ body{
 }
 .chip i{width:7px;height:7px;border-radius:50%;display:inline-block}
 .dot-idc{background:var(--idc)} .dot-psp{background:var(--psp)} .dot-hkm{background:var(--hkm)}
-.dot-tw{background:var(--tw)} .dot-usci{background:var(--usci)}
+.dot-tw{background:var(--tw)} .dot-usci{background:var(--usci)} .dot-pr{background:var(--pr)}
 
 .statbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:18px}
 .stat{
@@ -137,6 +138,7 @@ body{
 .type.on[data-t="passport"]{color:var(--psp);border-color:var(--psp);background:#faf7ff}
 .type.on[data-t="hkm"]{color:var(--hkm);border-color:var(--hkm);background:#fff5f7}
 .type.on[data-t="twn"]{color:var(--tw);border-color:var(--tw);background:#fff8f3}
+.type.on[data-t="pr"]{color:var(--pr);border-color:var(--pr);background:#fefaf2}
 .type.on[data-t="usci"]{color:var(--usci);border-color:var(--usci);background:#f3fdf9}
 .type.on .tt,.type.on .td{color:inherit}
 .type.on .td{opacity:.75}
@@ -204,6 +206,7 @@ td.num,th.num{text-align:right;width:56px;color:var(--muted);font-variant-numeri
 .numchip.hkm{border-left-color:var(--hkm);background:#fff4f6}
 .numchip.tw{border-left-color:var(--tw);background:#fff7f1}
 .numchip.usci{border-left-color:var(--usci);background:#f1fbf7}
+.numchip.pr{border-left-color:var(--pr);background:#fdf8ef}
 
 .badge{
   display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;
@@ -252,7 +255,7 @@ td.num,th.num{text-align:right;width:56px;color:var(--muted);font-variant-numeri
 .rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px}
 .rule{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fff;border-top:4px solid var(--primary)}
 .rule.r2{border-top-color:var(--psp)} .rule.r3{border-top-color:var(--hkm)}
-.rule.r4{border-top-color:var(--tw)} .rule.r5{border-top-color:var(--usci)}
+.rule.r4{border-top-color:var(--tw)} .rule.r5{border-top-color:var(--usci)} .rule.r6{border-top-color:var(--pr)}
 .rule h4{font-size:13.5px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:7px}
 .rule ul{list-style:none;display:grid;gap:6px}
 .rule li{font-size:12.2px;color:var(--text2);padding-left:16px;position:relative;line-height:1.65}
@@ -281,10 +284,11 @@ td.num,th.num{text-align:right;width:56px;color:var(--muted);font-variant-numeri
 
   <!-- ================= HERO ================= -->
   <header class="hero">
-    <h1>身份标识自动生成器 <span class="ver">v1.0</span></h1>
-    <p class="sub">用于测试环境的证件号码批量生成与合规校验。个人证件遵循 <b>GB 11643-1999</b> 与公安部出入境证件编号口径；单位证件遵循 <b>GB 32100-2015</b>（含第 1 号修改单）与 <b>GB 11714</b> 组织机构代码规则。生成结果全部经过内置校验器实时复核。</p>
+    <h1>身份标识自动生成器 <span class="ver">v1.1</span></h1>
+    <p class="sub">用于测试环境的证件号码批量生成与合规校验。个人证件遵循 <b>GB 11643-1999</b>、《外国人永久居留身份证技术规范》与公安部出入境证件编号口径；单位证件遵循 <b>GB 32100-2015</b>（含第 1 号修改单）与 <b>GB 11714</b> 组织机构代码规则。生成结果全部经过内置校验器实时复核。</p>
     <div class="chips">
       <span class="chip"><i class="dot-idc"></i>公民身份证</span>
+      <span class="chip"><i class="dot-pr"></i>外国人永久居留身份证</span>
       <span class="chip"><i class="dot-psp"></i>护照</span>
       <span class="chip"><i class="dot-hkm"></i>港澳居民来往内地通行证</span>
       <span class="chip"><i class="dot-tw"></i>台湾居民来往大陆通行证</span>
@@ -323,6 +327,8 @@ td.num,th.num{text-align:right;width:56px;color:var(--muted);font-variant-numeri
               <div><div class="tt">港澳居民来往内地通行证</div><div class="td">9 位或 11 位 · H / M 前缀</div></div></div>
             <div class="type" data-t="twn"><span class="tg" style="background:linear-gradient(180deg,#ea580c,#fdba74)"></span>
               <div><div class="tt">台湾居民来往大陆通行证</div><div class="td">8 位 / 10-14 位 · 含括号后缀式</div></div></div>
+            <div class="type" data-t="pr"><span class="tg" style="background:linear-gradient(180deg,#b45309,#f59e0b)"></span>
+              <div><div class="tt">外国人永久居留身份证</div><div class="td">18 位 · 首位 9 · 国籍码 + MOD 11-2 校验</div></div></div>
           </div>
         </div>
 
@@ -419,6 +425,25 @@ td.num,th.num{text-align:right;width:56px;color:var(--muted);font-variant-numeri
               </div>
             </div>
             <div class="hint">10 位号码中，前 8 位为终身号，后 2 位为签发次数；13/14 位为带括号后缀的书写形式。</div>
+          </div>
+
+          <div id="cfg-pr" class="cfgbox" style="display:none">
+            <div class="row">
+              <div class="fld"><label>首次申领地（省级，第 2-3 位）</label><select id="pr-prov"></select></div>
+              <div class="fld"><label>国籍 / 地区（第 4-6 位）</label><select id="pr-country"></select></div>
+            </div>
+            <div class="row">
+              <div class="fld"><label>性别</label>
+                <div class="seg" id="pr-sex">
+                  <button class="on" data-v="random">随机</button><button data-v="M">男</button><button data-v="F">女</button>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="fld"><label>出生日期起始</label><input type="date" id="pr-d1" value="1950-01-01" min="1901-01-01" max="2099-12-31"></div>
+              <div class="fld"><label>出生日期结束</label><input type="date" id="pr-d2" value="2005-12-31" min="1901-01-01" max="2099-12-31"></div>
+            </div>
+            <div class="hint">新版（2023.12 起"五星卡"）号码 18 位：首位 9 + 申领地省级代码（2 位）+ ISO 3166-1 数字国籍码（3 位）+ 出生日期（8 位）+ 顺序码（3 位，奇男偶女）+ GB/T 17710 MOD 11-2 校验码。旧版 15 位（3 位字母国籍 + 12 位数字）在校验页按宽松规则判定。</div>
           </div>
 
           <div class="row" style="margin-top:6px">
@@ -621,6 +646,22 @@ td.num,th.num{text-align:right;width:56px;color:var(--muted);font-variant-numeri
         <div class="ref">引用：国家移民管理局《出入境证件简明手册》</div>
       </div>
 
+      <div class="rule r6">
+        <h4><span style="color:var(--pr)">◆</span> 外国人永久居留身份证（新版"五星卡"）</h4>
+        <ul>
+          <li>新版号码为 <b>18 位</b>（17 位数字 + 1 位校验码），2023 年 12 月 1 日起签发。</li>
+          <li>第 1 位为<b>身份标识码，固定为 "9"</b>（外国人标识；公民身份号码首位按省级地址码排序为 1-8，可据此区分中外人员）。</li>
+          <li>第 2-3 位为<b>首次申领地代码</b>：省、自治区、直辖市行政区划数字代码前两位（GB/T 2260，如 11 北京、32 江苏）。</li>
+          <li>第 4-6 位为<b>国家/地区代码</b>：GB/T 2659.1（等同 ISO 3166-1 数字代码，如德国 276、法国 250、加拿大 124、沙特 682）；无国籍编为 <code>000</code>。</li>
+          <li>第 7-14 位为<b>出生日期码</b>，格式 YYYYMMDD（GB/T 7408），与公民身份号码一致。</li>
+          <li>第 15-17 位为<b>顺序码</b>，从 001 开始；第 17 位<b>奇数分配给男性，偶数分配给女性</b>。</li>
+          <li>第 18 位为<b>校验码</b>：GB/T 17710 MOD 11-2 算法，权重与查表同公民身份号码（<code>7 9 10 5 8 4 2 1 6 3 7 9 10 5 8 4 2</code> → <code>10X98765432</code>）。</li>
+          <li>官方样例：<code>932682198501010017</code>（沙特男性，江苏申领）、<code>911124198108030024</code>（加拿大女性，北京申领）。</li>
+          <li>旧版 15 位号码（外国人永久居留证 / 2017 版永居证：3 位拉丁字母国籍代码 + 12 位数字）在有效期内仍可使用；本工具按宽松规则判定并标注，旧版无校验位、无法核验。</li>
+        </ul>
+        <div class="ref">引用：国家移民管理局《外国人永久居留身份证技术规范》（4.6.7 号码构成）、《新版外国人永久居留身份证适配性改造要点》</div>
+      </div>
+
       <div class="rule r5">
         <h4><span style="color:var(--usci)">◆</span> 统一社会信用代码</h4>
         <ul>
@@ -744,6 +785,34 @@ const COUNTRIES = [
   ["ITA","意大利"],["ESP","西班牙"],["NLD","荷兰"],["CHE","瑞士"],["SWE","瑞典"],["NOR","挪威"]
 ];
 const COUNTRY_MAP = {}; COUNTRIES.forEach(function(c){ COUNTRY_MAP[c[0]] = c[1]; });
+
+/* 国籍 / 地区数字代码（GB/T 2659.1，等同 ISO 3166-1 numeric），用于外国人永久居留身份证第 4-6 位 */
+const PR_COUNTRIES = [
+  ["000","无国籍"],
+  ["036","澳大利亚"],["076","巴西"],["100","保加利亚"],["104","缅甸"],["124","加拿大"],
+  ["144","斯里兰卡"],["152","智利"],["156","中国"],["158","中国台湾"],["170","哥伦比亚"],
+  ["188","哥斯达黎加"],["191","克罗地亚"],["203","捷克"],["208","丹麦"],["233","爱沙尼亚"],
+  ["242","斐济"],["246","芬兰"],["250","法国"],["268","格鲁吉亚"],["276","德国"],
+  ["300","希腊"],["348","匈牙利"],["352","冰岛"],["356","印度"],["360","印度尼西亚"],
+  ["364","伊朗"],["368","伊拉克"],["372","爱尔兰"],["376","以色列"],["380","意大利"],
+  ["388","牙买加"],["392","日本"],["398","哈萨克斯坦"],["400","约旦"],["404","肯尼亚"],
+  ["408","朝鲜"],["410","韩国"],["414","科威特"],["418","老挝"],["422","黎巴嫩"],
+  ["428","拉脱维亚"],["434","利比亚"],["440","立陶宛"],["442","卢森堡"],["458","马来西亚"],
+  ["462","马尔代夫"],["496","蒙古"],["498","摩尔多瓦"],["499","黑山"],["504","摩洛哥"],
+  ["512","阿曼"],["516","纳米比亚"],["524","尼泊尔"],["528","荷兰"],["554","新西兰"],
+  ["558","尼加拉瓜"],["562","尼日尔"],["566","尼日利亚"],["578","挪威"],["583","密克罗尼西亚"],
+  ["586","巴基斯坦"],["591","巴拿马"],["598","巴布亚新几内亚"],["604","秘鲁"],["608","菲律宾"],
+  ["616","波兰"],["620","葡萄牙"],["634","卡塔尔"],["642","罗马尼亚"],["643","俄罗斯"],
+  ["682","沙特阿拉伯"],["688","塞尔维亚"],["702","新加坡"],["703","斯洛伐克"],["704","越南"],
+  ["705","斯洛文尼亚"],["710","南非"],["724","西班牙"],["729","苏丹"],["740","苏里南"],
+  ["748","斯威士兰"],["752","瑞典"],["756","瑞士"],["760","叙利亚"],["764","泰国"],
+  ["780","特立尼达和多巴哥"],["784","阿联酋"],["792","土耳其"],["795","土库曼斯坦"],
+  ["804","乌克兰"],["807","北马其顿"],["818","埃及"],["826","英国"],["834","坦桑尼亚"],
+  ["840","美国"],["858","乌拉圭"],["862","委内瑞拉"],["887","也门"],["894","赞比亚"]
+];
+const PR_COUNTRY_MAP = {}; PR_COUNTRIES.forEach(function(c){ PR_COUNTRY_MAP[c[0]] = c[1]; });
+/* 首次申领地代码：GB/T 2260 省级行政区划数字代码前两位（不含港澳台，永居证在内地/大陆申领） */
+const PR_PROVS = ["11","12","13","14","15","21","22","23","31","32","33","34","35","36","37","41","42","43","44","45","46","50","51","52","53","54","61","62","63","64","65"];
 
 /* 统一社会信用代码：登记管理部门 + 机构类别（GB 32100-2015 表2/表3 + 第1号修改单 + 代码中心扩展） */
 const USCI_DEPT = {
@@ -888,6 +957,31 @@ function genTwnPermit(opt){
   else if(f === "13") n = digits(10) + "(" + pick("ABCDEFGHJKLMNPQRSTUVWXYZ".split("")) + ")";
   else n = digits(10) + "(" + digits(2) + ")";
   return { number: n, meta:{ kind: f + " 位形式" } };
+}
+
+function genPrPermit(opt){
+  opt = opt || {};
+  var prov = opt.prov && PR_PROVS.indexOf(opt.prov) >= 0 ? opt.prov : pick(PR_PROVS);
+  var cc = opt.cc && /^\d{3}$/.test(opt.cc) ? opt.cc : pick(PR_COUNTRIES)[0];
+  var birth = opt.birth || (opt.d1 && opt.d2 ? randomDateRange(opt.d1, opt.d2) : randomDateRange("1950-01-01","2005-12-31"));
+  var sex = opt.sex || "random";
+  if(sex === "random") sex = Math.random() < 0.5 ? "M" : "F";
+  var seq = pad(1 + rnd(998), 3).split("");
+  var last = parseInt(seq[2], 10);
+  if(sex === "M" && last % 2 === 0) last = last === 8 ? 9 : last + 1;
+  if(sex === "F" && last % 2 === 1) last = last === 9 ? 8 : last + 1;
+  seq[2] = String(last);
+  var first17 = "9" + prov + cc + pad(birth.y, 4) + pad(birth.m, 2) + pad(birth.d, 2) + seq.join("");
+  return {
+    number: first17 + idCheckDigit(first17),
+    meta: {
+      kind: "新版 18 位（五星卡）",
+      prov: prov, provName: PROV_MAP[prov] || "未知省级行政区",
+      cc: cc, ccName: PR_COUNTRY_MAP[cc] || "未收录国籍码",
+      sex: sex, sexText: sex === "M" ? "男" : "女",
+      birthday: pad(birth.y,4) + "-" + pad(birth.m,2) + "-" + pad(birth.d,2)
+    }
+  };
 }
 
 function randomOrgCode(){
@@ -1068,6 +1162,79 @@ function validateTWN(raw){
   return mkResult("twn","台湾居民来往大陆通行证", ok, ok ? level : "fail", items, meta, ok ? summary : "校验未通过");
 }
 
+function validatePrResident(raw){
+  var items = [], s = String(raw).trim().toUpperCase(), meta = {};
+
+  /* 旧版 15 位（2017 版及之前：3 位拉丁字母国籍代码 + 12 位数字），宽松判定 */
+  if(s.length === 15){
+    var oldOk = /^[A-Z]{3}\d{12}$/.test(s);
+    items.push(it("版本识别", true, oldOk ? "warn" : "fail",
+      oldOk ? "15 位形态 → 旧版永居证（外国人永久居留证 / 2017 版）：3 位拉丁字母国籍代码 " + s.slice(0,3) + " + 12 位数字"
+            : "15 位但不符合「3 位字母 + 12 位数字」的旧版构成"));
+    if(oldOk){
+      var occ = s.slice(0,3);
+      meta.kind = "旧版 15 位";
+      meta.country = occ; meta.countryName = COUNTRY_MAP[occ] || "未收录";
+      return mkResult("pr","外国人永久居留身份证", true, "warn", items, meta,
+        "旧版号码结构合规（旧版无 MOD 11-2 校验位，无法核验校验位；证件在有效期内仍可正常使用）");
+    }
+    return mkResult("pr","外国人永久居留身份证", false, "fail", items, meta, "校验未通过");
+  }
+
+  var lenOk = s.length === 18;
+  items.push(it("长度", lenOk, lenOk ? "pass" : "fail", s.length + " 位（新版必须为 18 位）"));
+  var charset = /^\d{17}[0-9X]$/.test(s);
+  items.push(it("字符构成", charset, charset ? "pass" : "fail", charset ? "17 位数字 + 1 位校验码（数字或 X）" : "新版号码必须为 17 位数字 + 1 位校验码（数字或 X）"));
+  if(!lenOk || !charset){
+    return mkResult("pr","外国人永久居留身份证", false, "fail", items, meta, "结构不符合《外国人永久居留身份证技术规范》");
+  }
+
+  var idOk = s.charAt(0) === "9";
+  items.push(it("第 1 位(身份标识码)", idOk, idOk ? "pass" : "fail",
+    idOk ? "9（外国人标识，区别于公民身份号码首位 1-8）" : "必须为 9，实际为 " + s.charAt(0)));
+
+  var prov = s.slice(1,3);
+  var provOk = PR_PROVS.indexOf(prov) >= 0;
+  items.push(it("第 2-3 位(首次申领地)", provOk, provOk ? "pass" : "fail",
+    provOk ? (prov + " " + (PROV_MAP[prov] || "")) : (prov + " 不是有效的省级行政区划代码（GB/T 2260）")));
+  meta.prov = prov; meta.provName = provOk ? (PROV_MAP[prov] || "") : "未知";
+
+  var cc = s.slice(3,6);
+  var ccName = PR_COUNTRY_MAP[cc];
+  var ccOk = !!ccName;
+  items.push(it("第 4-6 位(国家/地区代码)", true, ccOk ? "pass" : "warn",
+    ccOk ? (cc + " " + ccName + (cc === "000" ? "（无国籍）" : "")) : (cc + " 不在内置 GB/T 2659.1 数字代码表中（ISO 3166-1 numeric 共 200 余项，内置为常用子集）")));
+  meta.cc = cc; meta.ccName = ccName || "未收录";
+
+  var bs = s.slice(6,14);
+  var y = parseInt(bs.slice(0,4),10), m = parseInt(bs.slice(4,6),10), d = parseInt(bs.slice(6,8),10);
+  var dateOk = false, dateDetail = "";
+  if(!/^\d{8}$/.test(bs)){ dateDetail = "出生日期段含非数字字符"; }
+  else if(y < 1901 || y > 2099){ dateDetail = "年份 " + y + " 超出 1901—2099"; }
+  else if(m < 1 || m > 12){ dateDetail = "月份 " + m + " 非法"; }
+  else if(d < 1 || d > daysInMonth(y, m)){ dateDetail = "日期 " + y + "-" + m + "-" + d + " 不存在"; }
+  else { dateOk = true; dateDetail = y + "-" + pad(m,2) + "-" + pad(d,2) + "（日期真实）"; }
+  items.push(it("第 7-14 位(出生日期)", dateOk, dateOk ? "pass" : "fail", dateDetail));
+  meta.birthday = dateOk ? (y + "-" + pad(m,2) + "-" + pad(d,2)) : bs;
+
+  var seq = s.slice(14,17);
+  var seqNum = parseInt(seq, 10);
+  var seqOk = seqNum >= 1;
+  items.push(it("第 15-17 位(顺序码)", seqOk, seqOk ? "pass" : "fail",
+    seqOk ? (seq + " → 第 17 位 " + (seqNum % 2 === 1 ? "奇数=男性" : "偶数=女性")) : "顺序码应从 001 起"));
+  meta.sex = seqNum % 2 === 1 ? "M" : "F";
+  meta.sexText = meta.sex === "M" ? "男" : "女";
+
+  var exp = idCheckDigit(s.slice(0,17));
+  var ckOk = exp === s.charAt(17);
+  items.push(it("第 18 位(校验码 MOD 11-2)", ckOk, ckOk ? "pass" : "fail", "应为 " + exp + "，实际 " + s.charAt(17)));
+
+  var hardOk = idOk && provOk && dateOk && seqOk && ckOk;
+  var hasWarn = items.some(function(x){ return x.level === "warn"; });
+  return mkResult("pr","外国人永久居留身份证", hardOk, hardOk ? (hasWarn ? "warn" : "pass") : "fail", items, meta,
+    hardOk ? (hasWarn ? "结构合规（国籍代码未收录，仅影响真实性）" : "完全合规") : "校验未通过");
+}
+
 function validateUSCI(raw){
   var items = [], s = String(raw).trim().toUpperCase(), meta = {};
   var lenOk = s.length === 18;
@@ -1131,16 +1298,17 @@ function validateUSCI(raw){
 
 const VALIDATORS = {
   idcard: validateIdCard,
+  pr: validatePrResident,
   passport: validatePassport,
   hkm: validateHKM,
   twn: validateTWN,
   usci: validateUSCI
 };
 const TYPE_NAMES = {
-  idcard:"公民身份证号码", passport:"护照证件号码", hkm:"港澳居民来往内地通行证",
+  idcard:"公民身份证号码", pr:"外国人永久居留身份证", passport:"护照证件号码", hkm:"港澳居民来往内地通行证",
   twn:"台湾居民来往大陆通行证", usci:"统一社会信用代码"
 };
-const TYPE_ORDER = ["idcard","passport","hkm","twn","usci"];
+const TYPE_ORDER = ["idcard","pr","passport","hkm","twn","usci"];
 
 function validateAs(type, raw){ return VALIDATORS[type](raw); }
 
@@ -1165,7 +1333,7 @@ function matchAll(raw){
    ================================================================= */
 const LS_KEY = "idgen.records.v1";
 let PERSON = [], ORG = [], STORE = [];
-let CFG = { ptype:"idcard", sex:"random", pspMode:"intl", pspTail:"num", hkmPrefix:"random", hkmLen:"random" };
+let CFG = { ptype:"idcard", sex:"random", prSex:"random", pspMode:"intl", pspTail:"num", hkmPrefix:"random", hkmLen:"random" };
 
 /* ---------- toast ---------- */
 function toast(msg, kind){
@@ -1217,6 +1385,13 @@ document.getElementById("psp-country").innerHTML =
   COUNTRIES.map(c => '<option value="' + c[0] + '">' + c[0] + "　" + c[1] + "</option>").join("");
 document.getElementById("psp-country").value = "CHN";
 
+document.getElementById("pr-prov").innerHTML =
+  '<option value="">随机（每次随机抽取一个省级申领地）</option>' +
+  PR_PROVS.map(p => '<option value="' + p + '">' + p + "　" + (PROV_MAP[p] || "") + "</option>").join("");
+document.getElementById("pr-country").innerHTML =
+  '<option value="">随机（每次随机抽取一个国家/地区）</option>' +
+  PR_COUNTRIES.map(c => '<option value="' + c[0] + '">' + c[0] + "　" + c[1] + "</option>").join("");
+
 document.getElementById("u-dept").innerHTML =
   USCI_DEPT_KEYS.map(k => '<option value="' + k + '">' + k + "　" + USCI_DEPT[k].name + "</option>").join("");
 document.getElementById("u-dept").value = "9";
@@ -1239,11 +1414,11 @@ document.querySelectorAll("#ptypes .type").forEach(el => {
     document.querySelectorAll("#ptypes .type").forEach(x => x.classList.remove("on"));
     el.classList.add("on");
     CFG.ptype = el.dataset.t;
-    ["idcard","passport","hkm","twn"].forEach(t => {
+    ["idcard","passport","hkm","twn","pr"].forEach(t => {
       document.getElementById("cfg-" + t).style.display = (t === CFG.ptype) ? "" : "none";
     });
     document.getElementById("cfgname").textContent = TYPE_NAMES[CFG.ptype];
-    const colors = { idcard:"var(--idc)", passport:"var(--psp)", hkm:"var(--hkm)", twn:"var(--tw)" };
+    const colors = { idcard:"var(--idc)", passport:"var(--psp)", hkm:"var(--hkm)", twn:"var(--tw)", pr:"var(--pr)" };
     document.getElementById("cfgbar").style.background = colors[CFG.ptype];
   });
 });
@@ -1261,6 +1436,7 @@ function segGroup(id, cb){
   });
 }
 segGroup("idc-sex", v => CFG.sex = v);
+segGroup("pr-sex", v => CFG.prSex = v);
 segGroup("psp-tailset", v => CFG.pspTail = v);
 segGroup("hkm-prefix", v => CFG.hkmPrefix = v);
 segGroup("hkm-len", v => CFG.hkmLen = v);
@@ -1296,6 +1472,15 @@ function genOne(type){
     });
   }
   if(type === "twn") return genTwnPermit({ format: document.getElementById("twn-fmt").value });
+  if(type === "pr"){
+    return genPrPermit({
+      prov: document.getElementById("pr-prov").value,
+      cc: document.getElementById("pr-country").value,
+      sex: CFG.prSex,
+      d1: document.getElementById("pr-d1").value,
+      d2: document.getElementById("pr-d2").value
+    });
+  }
   return genUSCI({
     dept: document.getElementById("u-dept").value,
     cat: document.getElementById("u-cat").value,
@@ -1309,6 +1494,7 @@ function describe(type, meta){
   if(type === "passport") return '<span class="tag k">' + (meta.kind || "") + "</span>" + (meta.countryName ? '<span class="tag">' + meta.country + " " + meta.countryName + "</span>" : "");
   if(type === "hkm") return '<span class="tag k">' + meta.kind + "</span><span class=\"tag\">" + meta.place + "</span>";
   if(type === "twn") return '<span class="tag k">' + meta.kind + "</span>";
+  if(type === "pr") return '<span class="tag k">' + (meta.kind || "新版 18 位") + '</span><span class="tag">' + (meta.cc || "") + " " + (meta.ccName || "") + '</span><span class="tag">' + (meta.provName || "") + '</span><span class="tag ' + (meta.sex === "M" ? "m" : "f") + '">' + (meta.sexText || "") + "</span>" + (meta.birthday ? '<span class="tag">' + meta.birthday + "</span>" : "");
   return '<span class="tag k">' + meta.deptName + "</span><span class=\"tag\">" + meta.catName + "</span><span class=\"tag\">" + meta.regionName + "</span>";
 }
 function describePlain(type, meta){
@@ -1316,6 +1502,7 @@ function describePlain(type, meta){
   if(type === "passport") return (meta.kind || "") + (meta.countryName ? " / " + meta.country + " " + meta.countryName : "");
   if(type === "hkm") return meta.kind + " / " + meta.place;
   if(type === "twn") return meta.kind;
+  if(type === "pr") return (meta.kind || "新版 18 位") + " / " + (meta.cc || "") + " " + (meta.ccName || "") + " / " + (meta.provName || "") + " / " + (meta.sexText || "") + (meta.birthday ? " / " + meta.birthday : "");
   return meta.deptName + " / " + meta.catName + " / " + meta.regionName;
 }
 
@@ -1654,8 +1841,10 @@ document.getElementById("v-demo").addEventListener("click", () => {
   const t2 = genTwnPermit({ format:"13" });
   const u1 = genUSCI({ dept:"9", cat:"1", region:"350100", subject:"org" });
   const u2 = genUSCI({ dept:"5", cat:"1", region:"110108", subject:"org" });
+  const f1 = genPrPermit({ prov:"32", cc:"682", sex:"M", birth:{ y:1985, m:1, d:1 } });
+  const f2 = genPrPermit({ prov:"11", cc:"124", sex:"F", birth:{ y:1981, m:8, d:3 } });
   document.getElementById("v-input").value = [
-    demo.number, demo2.number, p1.number, p2.number, p3.number,
+    demo.number, demo2.number, f1.number, f2.number, p1.number, p2.number, p3.number,
     h1.number, h2.number, t1.number, t2.number, u1.number, u2.number,
     "11010119491231002Y", "91350100M000100Y43", "H1234567", "1234567"
   ].join("\n");
@@ -1687,7 +1876,13 @@ function selfCheck(which){
         { name: "台湾通行证 · 8 位纯数字", type:"twn", run: () => genTwnPermit({ format:"8" }) },
         { name: "台湾通行证 · 10 位纯数字", type:"twn", run: () => genTwnPermit({ format:"10" }) },
         { name: "台湾通行证 · 13 位 (字母)", type:"twn", run: () => genTwnPermit({ format:"13" }) },
-        { name: "台湾通行证 · 14 位 (两位数字)", type:"twn", run: () => genTwnPermit({ format:"14" }) }
+        { name: "台湾通行证 · 14 位 (两位数字)", type:"twn", run: () => genTwnPermit({ format:"14" }) },
+        { name: "永居证 · 随机全部", type:"pr", run: () => genPrPermit({}) },
+        { name: "永居证 · 男性", type:"pr", run: () => genPrPermit({ sex:"M" }) },
+        { name: "永居证 · 女性", type:"pr", run: () => genPrPermit({ sex:"F" }) },
+        { name: "永居证 · 无国籍(000)", type:"pr", run: () => genPrPermit({ cc:"000" }) },
+        { name: "永居证 · 2099 年末出生", type:"pr", run: () => genPrPermit({ birth:{ y:2099, m:12, d:31 } }) },
+        { name: "永居证 · 1901 年初出生", type:"pr", run: () => genPrPermit({ birth:{ y:1901, m:1, d:1 } }) }
       ];
   const N = which === "u" ? 400 : 1000;
   const rows = cases.map(c => {
@@ -1740,6 +1935,8 @@ renderStore();
 updateStats();
 document.getElementById("v-input").value = [
   "11010519491231002X",
+  "932682198501010017",
+  "911124198108030024",
   "E12345678",
   "H12345678",
   "M1234567890",
