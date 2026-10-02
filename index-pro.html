@@ -275,7 +275,7 @@ td.num,th.num{text-align:right;width:56px;color:var(--muted);font-variant-numeri
 
   <!-- ================= HERO ================= -->
   <header class="hero">
-    <h1>身份标识自动生成器 <span class="ver">v1.3</span></h1>
+    <h1>身份标识自动生成器 <span class="ver">v1.8</span></h1>
     <p class="sub">测试环境专用的 6 类证件号码批量生成与合规校验，生成结果全部经内置校验器实时复核。编码依据详见「规则说明」页签。</p>
     <div class="statbar">
       <div class="stat"><b id="s-gen">0</b><span>本次会话生成</span></div>
@@ -1423,6 +1423,14 @@ segGroup("pr-sex", v => CFG.prSex = v);
 segGroup("psp-tailset", v => CFG.pspTail = v);
 segGroup("hkm-prefix", v => CFG.hkmPrefix = v);
 segGroup("hkm-len", v => CFG.hkmLen = v);
+/* 日期区间联动：起始不得晚于结束，越界一侧自动跟随对齐 */
+function bindDateRange(sId, eId){
+  const s = document.getElementById(sId), e = document.getElementById(eId);
+  s.addEventListener("change", () => { if(s.value && e.value && s.value > e.value) e.value = s.value; });
+  e.addEventListener("change", () => { if(s.value && e.value && e.value < s.value) s.value = e.value; });
+}
+bindDateRange("idc-d1", "idc-d2");
+bindDateRange("pr-d1", "pr-d2");
 document.getElementById("psp-mode").addEventListener("change", e => {
   CFG.pspMode = e.target.value;
   document.getElementById("psp-intl").style.display = CFG.pspMode === "intl" ? "" : "none";
