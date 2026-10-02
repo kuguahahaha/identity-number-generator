@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>身份标识生成器 · 极简版 v1.6</title>
+<title>身份标识生成器 · 极简版 v1.7</title>
 <style>
 :root{
   --bg:#f4f6fc; --card:#fff; --line:#e3e8f2; --line2:#cdd8ee;
@@ -136,7 +136,7 @@ footer a{color:var(--idc);text-decoration:none}
 <div class="wrap">
 
   <header class="hero">
-    <h1>身份标识生成器 <span class="ver">v1.6 极简版</span></h1>
+    <h1>身份标识生成器 <span class="ver">v1.7 极简版</span></h1>
     <p>公民身份证 / <b>外国人永久居留身份证</b> / 护照 / 港澳通行证 / 台湾通行证 / 统一社会信用代码 —— 一键生成并实时校验。单文件、零依赖、可离线，历史记录存在浏览器本地。</p>
     <div class="statbar">
       <div class="stat"><b id="s1">0</b><span>本次生成</span></div>
@@ -905,11 +905,18 @@ const CFG = {
       '<option value="org">严格：8 位数字 + GB 11714 校验位</option>' +
       '<option value="loose">扩展：31 字符集随机</option></select></div>'
 };
+/* 日期区间联动：起始不得晚于结束，越界一侧自动跟随对齐 */
+function bindDateRange(sId, eId){
+  const s = document.getElementById(sId), e = document.getElementById(eId);
+  s.addEventListener("change", () => { if(s.value && e.value && s.value > e.value) e.value = s.value; });
+  e.addEventListener("change", () => { if(s.value && e.value && e.value < s.value) s.value = e.value; });
+}
 function buildCfg(){
   const box = document.getElementById("cfg");
   box.innerHTML = CFG[CUR]();
   document.getElementById("curname").textContent = TYPE_NAMES[CUR];
-  if(CUR === "idcard"){ regions(document.getElementById("c1")); }
+  if(CUR === "idcard"){ regions(document.getElementById("c1")); bindDateRange("c2","c3"); }
+  if(CUR === "pr"){ bindDateRange("c3","c4"); }
   if(CUR === "passport"){
     const sel = document.getElementById("c2");
     SEG.pspMode = "intl";
