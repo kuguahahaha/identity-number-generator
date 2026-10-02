@@ -11,12 +11,12 @@
 
 | 版本 | 入口 | 说明 |
 |---|---|---|
-| **极简版 v1.6**（推荐快速使用） | [index.html](https://kuguahahaha.github.io/identity-number-generator/) | 生成 → 校验 → 历史，三步走完 |
-| **完整版 v1.3** | [index-pro.html](https://kuguahahaha.github.io/identity-number-generator/index-pro.html) | 分页签，带台账、批量自检、全类型匹配、规则说明 |
+| **极简版 v1.7**（推荐快速使用） | [index.html](https://kuguahahaha.github.io/identity-number-generator/) | 生成 → 校验 → 历史，三步走完 |
+| **完整版 v1.8** | [index-pro.html](https://kuguahahaha.github.io/identity-number-generator/index-pro.html) | 分页签，带台账、批量自检、全类型匹配、规则说明 |
 
 ## 两个版本怎么选
 
-| 能力 | 极简版 v1.6 | 完整版 v1.3 |
+| 能力 | 极简版 v1.7 | 完整版 v1.8 |
 |---|---|---|
 | 证件生成 | ✅ 6 类（含外国人永久居留身份证） | ✅ 6 类（含外国人永久居留身份证） |
 | 号码校验 | ✅ 自动识别 | ✅ 自动识别 + 指定类型 + **全类型并行匹配** |
@@ -63,8 +63,8 @@ GB 32100-2015 规定第 9-17 位按 GB 11714 编码（8 位数字 + 1 位校验�
 ## 下载
 
 - [Releases 页面](https://github.com/kuguahahaha/identity-number-generator/releases)
-- [极简版 v1.6](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.6/identity-number-generator-v1.6.html)（约 77 KB，当前）
-- [完整版 v1.3](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.3/identity-number-generator-v1.3.html)（约 126 KB，当前）
+- [极简版 v1.7](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.7/identity-number-generator-v1.7.html)（约 78 KB，当前）
+- [完整版 v1.8](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.8/identity-number-generator-v1.8.html)（约 126 KB，当前）
 - [极简版 v1.5](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.5/identity-number-generator-v1.5.html)（约 76 KB，旧版存档）
 - [极简版 v1.0](https://github.com/kuguahahaha/identity-number-generator/releases/download/v1.0/identity-number-generator-v1.0.html)（约 65 KB，旧版存档）
 
@@ -81,7 +81,10 @@ node 算法自检.js index.html     # 校验极简版
 
 ## 更新日志
 
-### v1.6（极简版，当前）
+### v1.7（极简版，当前）
+- **日期区间联动校验**：出生起始 / 结束互相约束，起始晚于结束时结束自动跟随对齐（反之亦然），身份证与永居证两处日期区间均生效
+
+### v1.6（极简版，旧版存档）
 - **表单彻底单行化**：生成数量与「生成并自动校验」按钮并入参数行，6 类证件均为「参数项 + 数量 + 按钮」一行完成，去掉了原来独立的按钮行
 
 ### v1.5（极简版，旧版存档）
@@ -90,7 +93,10 @@ node 算法自检.js index.html     # 校验极简版
 ### v1.4（极简版，旧版存档）
 - **样式优化**：参数面板收窄——永居证申领地 / 国籍 / 性别 / 出生区间合并为一行，生成数量与「生成并自动校验」按钮合并为一行
 
-### v1.3（完整版，当前）
+### v1.8（完整版，当前）
+- **日期区间联动校验**：同极简版 v1.7，身份证 / 永居证的出生日期起止双向联动
+
+### v1.3（完整版，旧版存档）
 - **样式优化**：顶部横幅精简——副标题缩短为一句话（编码依据移至「规则说明」页签）、移除证件类型图例行、四张统计卡片缩小（高度约为原来的 60%）
 
 ### v1.2（极简版，旧版存档）
